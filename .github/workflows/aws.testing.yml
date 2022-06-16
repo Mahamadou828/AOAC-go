@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - development
+      - testing
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
@@ -20,4 +20,4 @@ jobs:
       # Run Unit tests- Specify unit tests here
 
       # sam deploy
-      - run: sam deploy --config-env development
+      - run: sam deploy --config-env testing
