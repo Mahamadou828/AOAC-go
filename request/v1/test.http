@@ -1,0 +1,4 @@
+### Test endpoint
+GET {{BASE_URL}}/{{VERSION}}/hello
+x-api-key: {{API_KEY}}
+content-type: application/json
