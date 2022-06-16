@@ -3,8 +3,10 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/getsentry/sentry-go"
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -47,5 +49,20 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 }
 
 func main() {
+
+	//========================================= Logging
+	//Configuring sentry
+	if err := sentry.Init(sentry.ClientOptions{
+		Dsn:              "https://f272b793754e449c88bd630f8ee06f05@o1236486.ingest.sentry.io/6509179",
+		TracesSampleRate: 1.0,
+		AttachStacktrace: true,
+		Debug:            false,
+	}); err != nil {
+		panic(err)
+	}
+
+	defer sentry.Flush(2 * time.Second)
+
+	sentry.CaptureMessage("It works!")
 	lambda.Start(handler)
 }

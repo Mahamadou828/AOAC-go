@@ -86,7 +86,9 @@ fabric.properties
 *.out
 
 # Dependency directories (remove the comment below to include it)
-# vendor/
+vendor/
+
+
 
 ### SAM template
 # gitignore template for AWS Serverless Application Model project
