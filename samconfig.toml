@@ -1,0 +1,33 @@
+version = 0.1
+[testing]
+[testing.deploy]
+[testing.deploy.parameters]
+stack_name = "testing-aoac"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-18nzweel3iczm"
+s3_prefix = "testing-aoac"
+region = "eu-west-1"
+capabilities = "CAPABILITY_IAM"
+disable_rollback = true
+image_repositories = []
+
+[staging]
+[staging.deploy]
+[staging.deploy.parameters]
+stack_name = "staging-aoac"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-18nzweel3iczm"
+s3_prefix = "staging-aoac"
+region = "eu-west-1"
+capabilities = "CAPABILITY_IAM"
+disable_rollback = true
+image_repositories = []
+
+[production]
+[production.deploy]
+[production.deploy.parameters]
+stack_name = "production-aoac"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-18nzweel3iczm"
+s3_prefix = "production-aoac"
+region = "eu-west-1"
+capabilities = "CAPABILITY_IAM"
+disable_rollback = true
+image_repositories = []
