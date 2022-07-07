@@ -4,6 +4,7 @@ on:
       - development
       - testing
       - staging
+      - testing
       - main
 name: Test
 jobs:
