@@ -13,3 +13,7 @@ start-v1: build-v1 start-api-v1
 
 test:
 	go test -v ./...
+
+tidy:
+	go mod tidy
+	go mod vendor
