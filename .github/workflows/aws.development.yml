@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - testing
+      - development
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
