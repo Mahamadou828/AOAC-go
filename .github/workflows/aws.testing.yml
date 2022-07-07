@@ -15,7 +15,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
       # sam build version v1
-      - run: sam build -t config/v1/template
+      - run: sam build -t ../config/v1/template
 
       # Run Unit tests- Specify unit tests here
 
