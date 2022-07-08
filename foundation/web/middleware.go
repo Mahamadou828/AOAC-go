@@ -2,11 +2,11 @@ package web
 
 import (
 	"context"
+	"github.com/Mahamadou828/AOAC/business/sys/aws"
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/aws/aws-sdk-go/aws/session"
 )
 
-type Handler func(ctx context.Context, request events.APIGatewayProxyRequest, sess *session.Session, secrets map[string]string) (events.APIGatewayProxyResponse, error)
+type Handler func(ctx context.Context, request events.APIGatewayProxyRequest, client *aws.Client) (events.APIGatewayProxyResponse, error)
 
 type Middelware func(h Handler) Handler
 

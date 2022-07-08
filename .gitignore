@@ -85,11 +85,6 @@ fabric.properties
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
-# Dependency directories (remove the comment below to include it)
-vendor/
-
-
-
 ### SAM template
 # gitignore template for AWS Serverless Application Model project
 # website: https://docs.aws.amazon.com/serverless-application-model

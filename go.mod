@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/aws/aws-lambda-go v1.32.0
-	github.com/aws/aws-sdk-go v1.44.35
+	github.com/aws/aws-sdk-go v1.44.49
 	github.com/getsentry/sentry-go v0.13.0
 	github.com/google/uuid v1.3.0
 )
