@@ -10,8 +10,10 @@ import (
 	"os"
 	"path"
 	"reflect"
+	"strconv"
 	"strings"
 	"text/tabwriter"
+	"time"
 	"unicode"
 )
 
@@ -58,78 +60,6 @@ type Tag struct {
 //Parsers defines an interface for custom parsing functions
 type Parsers interface {
 	Parse(field Field) error
-}
-
-func Parse(cfg interface{}, prefix string, parsers ...Parsers) (map[string]string, error) {
-	m := make(map[string]string)
-	v := reflect.ValueOf(cfg)
-	if v.Kind() != reflect.Ptr {
-		return nil, ErrInvalidStruct
-	}
-
-	osArgs := make(map[string]string)
-	if err := ParseOsArgs(osArgs); err != nil {
-		if errors.Is(err, ErrHelpWanted) {
-			_, err := UsageInfo(prefix, cfg)
-
-			if err != nil {
-				return nil, fmt.Errorf("can't compose help message: %v", err)
-			}
-
-			return nil, ErrHelpWanted
-		}
-		return nil, err
-	}
-
-	envArgs := make(map[string]string)
-	if err := ParseEnvArgs(envArgs, prefix); err != nil {
-		return nil, err
-	}
-
-	fields, err := extractFields(nil, cfg)
-
-	if err != nil {
-		return nil, err
-	}
-
-	for _, field := range fields {
-		if !field.Field.IsValid() || !field.Field.CanSet() {
-			return nil, fmt.Errorf("can't set the value of field %s", field.Field.String())
-		}
-
-		if parsers != nil {
-			if len(parsers) > 0 {
-				for _, parser := range parsers {
-					if err := parser.Parse(field); err != nil {
-						return nil, fmt.Errorf("custom parser error: %v", err)
-					}
-				}
-				continue
-			}
-		}
-
-		//The value of the field is equal by default to the tag value
-		value := field.Options.DefaultVal
-		//the env value overrides the default tag value
-		envVal, ok := envArgs[field.Name]
-
-		if ok {
-			value = envVal
-		}
-		//the os value overrides the default and the env value
-		osVal, ok := osArgs[field.Name]
-		if ok {
-			value = osVal
-		}
-
-		if value == "" && field.Options.Required {
-			return nil, fmt.Errorf("invalue value for field %s, field mark as required but value=%q", field.Name, value)
-		}
-
-		m[field.Name] = value
-	}
-
-	return m, nil
 }
 
 //ParseOsArgs parses given command line arguments
@@ -293,6 +223,64 @@ func UsageInfo(prefix string, cfg interface{}) (string, error) {
 	}
 
 	return sb.String(), nil
+}
+
+//SetFieldValue sets the value of a struct field.
+//The value can only be a string the function manage
+//the conversion to the appropriate type.
+func SetFieldValue(field Field, value string) error {
+	switch field.Field.Kind() {
+	case reflect.String:
+		field.Field.SetString(value)
+	case reflect.Slice:
+		vals := append([]string{}, strings.Split(value, ";")...)
+		sl := reflect.MakeSlice(field.Field.Type(), len(vals), len(vals))
+
+		for i, val := range vals {
+
+			if err := SetFieldValue(Field{Field: sl.Index(i)}, val); err != nil {
+				return err
+			}
+		}
+
+		field.Field.Set(sl)
+		return nil
+	case reflect.Int, reflect.Int64, reflect.Int16, reflect.Int8:
+		var (
+			val int64
+			err error
+		)
+
+		if field.Field.Kind() == reflect.Int64 && field.Field.Type().PkgPath() == "time" && field.Field.Type().Name() == "Duration" {
+			var d time.Duration
+
+			d, err = time.ParseDuration(value)
+
+			val = int64(d)
+		} else {
+			val, err = strconv.ParseInt(value, 0, field.Field.Type().Bits())
+		}
+
+		if err != nil {
+			return err
+		}
+
+		if field.Field.OverflowInt(val) {
+			return fmt.Errorf("given int %v overflows the.Field %s", val, field.Field.Type().Name())
+		}
+
+		field.Field.SetInt(val)
+	case reflect.Bool:
+		val, err := strconv.ParseBool(value)
+
+		if err != nil {
+			return fmt.Errorf("can't convert %v to bool: %v for field %s", val, err, field.Field.Type().Name())
+		}
+
+		field.Field.SetBool(val)
+	}
+
+	return nil
 }
 
 //extractFields use reflection to parse the given struct and extract all fields

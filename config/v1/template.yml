@@ -1,6 +1,28 @@
+##For environmental variables used the following snippet
+## !Join ['', ['{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'PARAMETER_NAME', '}}']]
+
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: AOAC Back end api
+
+Parameters:
+  Env:
+    Type: String
+    Description: the environment of the lambdas functions
+    AllowedValues:
+      - development
+      - testing
+      - production
+      - staging
+      - local
+    Default: local
+  Service:
+    Type: String
+    Description: the service that the template is corresponding to
+    AllowedValues:
+      - aoac
+    Default: aoac
+
 
 Globals:
   Function:
@@ -10,6 +32,9 @@ Globals:
     Architectures:
       - x86_64
     Tracing: Active
+    Environment:
+      Variables:
+        ENV: !Ref Env
 
 Resources:
   HelloWorldFunction:
@@ -17,6 +42,9 @@ Resources:
     Properties:
       CodeUri: ../../app/lambda/v1/hello-world/
       Handler: hello-world
+      Environment:
+        Variables:
+          SECRET_ENV: !Join ['', ['{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}']]
       Events:
         CatchAll:
           Type: Api
