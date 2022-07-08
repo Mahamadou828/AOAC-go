@@ -7,11 +7,5 @@ import (
 )
 
 func main() {
-	lambda.Start(
-		web.NewHandler(
-			hello.Hello,
-			"AOAC_API",
-			nil,
-		),
-	)
+	lambda.Start(web.NewHandler(hello.Hello))
 }

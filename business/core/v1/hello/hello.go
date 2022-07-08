@@ -3,9 +3,11 @@ package hello
 import (
 	"context"
 	"errors"
+	"fmt"
+	"github.com/Mahamadou828/AOAC/app/tools/config"
+	"github.com/Mahamadou828/AOAC/business/sys/aws"
 	"github.com/Mahamadou828/AOAC/foundation/web"
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"io/ioutil"
 	"net/http"
 )
@@ -21,7 +23,16 @@ var (
 	ErrNon200Response = errors.New("Non 200 Response found")
 )
 
-func Hello(ctx context.Context, r events.APIGatewayProxyRequest, sess *session.Session, secret map[string]string) (events.APIGatewayProxyResponse, error) {
+func Hello(ctx context.Context, r events.APIGatewayProxyRequest, client *aws.Client) (events.APIGatewayProxyResponse, error) {
+	cfg := struct {
+		Env       string `conf:"env:ENV,required"`
+		SecretEnv string `conf:"env:SECRET_ENV,required"`
+	}{}
+
+	if err := config.ParseLambdaCfg(&cfg); err != nil {
+		return events.APIGatewayProxyResponse{}, fmt.Errorf("can't parse config: %v", err)
+	}
+
 	resp, err := http.Get(DefaultHTTPGetAddress)
 	if err != nil {
 		return events.APIGatewayProxyResponse{}, err
@@ -41,11 +52,15 @@ func Hello(ctx context.Context, r events.APIGatewayProxyRequest, sess *session.S
 	}
 
 	data := struct {
-		IP   string `json:"ip"`
-		Path string `json:"path"`
+		IP        string `json:"ip"`
+		Path      string `json:"path"`
+		Env       string `json:"env"`
+		SecretEnv string `json:"secretEnv"`
 	}{
-		IP:   string(ip),
-		Path: r.Path,
+		IP:        string(ip),
+		Path:      r.Path,
+		Env:       cfg.Env,
+		SecretEnv: cfg.SecretEnv,
 	}
 
 	return web.Response(ctx, 200, data)
