@@ -9,6 +9,10 @@ region = "eu-west-1"
 capabilities = "CAPABILITY_IAM"
 disable_rollback = true
 image_repositories = []
+#Custom parameters see template for more description
+parameter_overrides = [
+    "Env=testing",
+]
 
 [staging]
 [staging.deploy]
@@ -20,6 +24,10 @@ region = "eu-west-1"
 capabilities = "CAPABILITY_IAM"
 disable_rollback = true
 image_repositories = []
+#Custom parameters see template for more description
+parameter_overrides = [
+    "Env=staging",
+]
 
 [production]
 [production.deploy]
@@ -31,3 +39,8 @@ region = "eu-west-1"
 capabilities = "CAPABILITY_IAM"
 disable_rollback = true
 image_repositories = []
+#Custom parameters see template for more description
+parameter_overrides = [
+    "Env=production",
+]
+

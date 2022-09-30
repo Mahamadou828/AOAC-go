@@ -16,5 +16,8 @@ start-api-v1:
 
 start-v1: build-v1 start-api-v1
 
+admin:
+	go run app/tools/admin/main.go
+
 test:
 	go test -v ./...
