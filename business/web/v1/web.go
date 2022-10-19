@@ -2,12 +2,14 @@ package web
 
 import (
 	"context"
-	"github.com/Mahamadou828/AOAC/business/sys/aws"
-	"github.com/Mahamadou828/AOAC/business/web/v1/middleware"
+	"fmt"
+	"github.com/Mahamadou828/AOAC/business/sys/database"
 	"os"
 	"time"
 
-	"github.com/Mahamadou828/AOAC/foundation/web"
+	"github.com/Mahamadou828/AOAC/business/sys/aws"
+	"github.com/Mahamadou828/AOAC/business/web/v1/middleware"
+	"github.com/Mahamadou828/AOAC/foundation/lambda"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/getsentry/sentry-go"
 	"github.com/google/uuid"
@@ -17,8 +19,8 @@ const service = "aoac"
 
 type LambdaHandler func(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)
 
-//NewHandler create a new lambda handler
-func NewHandler(handler web.Handler) LambdaHandler {
+// NewHandler create a new lambda handler
+func NewHandler(handler lambda.Handler) LambdaHandler {
 	//Init sentry
 	if err := sentry.Init(sentry.ClientOptions{
 		Dsn:              "https://f272b793754e449c88bd630f8ee06f05@o1236486.ingest.sentry.io/6509179",
@@ -29,31 +31,43 @@ func NewHandler(handler web.Handler) LambdaHandler {
 		panic(err)
 	}
 
+	fmt.Println(os.Getenv("COGNITO_USER_POOL_ID"), os.Getenv("COGNITO_CLIENT_ID"))
 	//Init a new aws sess
-	client, err := aws.New(service, os.Getenv("ENV"))
+	awsCfg := aws.Config{
+		ServiceName:       service,
+		Environment:       os.Getenv("ENV"),
+		CognitoUserPoolID: os.Getenv("COGNITO_USER_POOL_ID"),
+		CognitoClientID:   os.Getenv("COGNITO_CLIENT_ID"),
+	}
+	client, err := aws.New(awsCfg)
 	if err != nil {
 		panic(err)
 	}
 
 	//Create context for the handler
 	hub := sentry.CurrentHub().Clone()
-	v := web.RequestTrace{
+	v := lambda.RequestTrace{
 		ID:         uuid.NewString(),
 		Now:        time.Now().UTC(),
 		StatusCode: 0,
 		Hub:        hub,
 	}
 
-	ctx := context.WithValue(context.Background(), web.CtxKey, &v)
+	ctx := context.WithValue(context.Background(), lambda.CtxKey, &v)
 
 	//wrap the handler with all the middlewares
-	h := web.WrapMiddleware(handler, middleware.Errors())
+	h := lambda.WrapMiddleware(handler, middleware.Errors())
 
-	lambda := func(r events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	cfg := lambda.Config{
+		AWSClient: client,
+		Db:        database.Open(client, os.Getenv("ENV")),
+	}
+
+	lmHandler := func(r events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 		defer sentry.Flush(2 * time.Second)
-		return h(ctx, r, client)
+		return h(ctx, r, &cfg)
 	}
 
 	//call the handler
-	return lambda
+	return lmHandler
 }

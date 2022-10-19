@@ -1,0 +1,9 @@
+### Get All Admin
+GET {{BASE_URL}}/{{VERSION}}/admin
+x-api-key: {{API_KEY}}
+content-type: application/json
+
+### Create Admin
+POST {{BASE_URL}}/{{VERSION}}/admin
+x-api-key: {{API_KEY}}
+content-type: application/json

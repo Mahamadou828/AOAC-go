@@ -12,9 +12,9 @@ build-v1:
 	sam build -t config/v1/template.yml
 
 start-api-v1:
-	sam local start-api
+	sam local start-api --env-vars env.local.json
 
-start-v1: build-v1 start-api-v1
+start: build-v1 start-api-v1
 
 admin:
 	go run app/tools/admin/main.go

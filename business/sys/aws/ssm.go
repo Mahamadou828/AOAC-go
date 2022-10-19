@@ -14,7 +14,7 @@ var (
 	ErrSSMNoSecretForService = errors.New("no secret for the given service was initiated")
 )
 
-//SSM provide an api to communicate with the aws simple secrets service
+// SSM provide an api to communicate with the aws simple secrets service
 type SSM struct {
 	service string
 	env     string
@@ -89,9 +89,9 @@ func (s *SSM) GetSecret() (map[string]string, error) {
 	return secrets, nil
 }
 
-//CreatePool create a new secret pool, a secret pool is a set of secret for
-//a given service. To create a secret pool we should have at least one secret inside the pool
-func (s SSM) CreatePool() error {
+// CreatePool create a new secret pool, a secret pool is a set of secret for
+// a given service. To create a secret pool we should have at least one secret inside the pool
+func (s *SSM) CreatePool() error {
 	m := make(map[string]string)
 	b, err := json.Marshal(m)
 	if err != nil {
