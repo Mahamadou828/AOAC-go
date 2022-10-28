@@ -2,7 +2,6 @@ package web
 
 import (
 	"context"
-	"fmt"
 	"github.com/Mahamadou828/AOAC/business/sys/database"
 	"os"
 	"time"
@@ -31,7 +30,6 @@ func NewHandler(handler lambda.Handler) LambdaHandler {
 		panic(err)
 	}
 
-	fmt.Println(os.Getenv("COGNITO_USER_POOL_ID"), os.Getenv("COGNITO_CLIENT_ID"))
 	//Init a new aws sess
 	awsCfg := aws.Config{
 		ServiceName:       service,

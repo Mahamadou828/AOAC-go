@@ -11,6 +11,15 @@ import (
 	"github.com/Mahamadou828/AOAC/foundation/lambda"
 )
 
+//@todo implement pagination
+
+type Session struct {
+	Admin        admin.Admin `json:"admin"`
+	RefreshToken string      `json:"refreshToken"`
+	ExpiresIn    int64       `json:"expiresIn"`
+	Token        string      `json:"token"`
+}
+
 func Create(ctx context.Context, cfg *lambda.Config, na admin.NewAdminDTO, now time.Time) (admin.Admin, error) {
 	//Generate admin id
 	id := validate.GenerateID()
@@ -22,6 +31,7 @@ func Create(ctx context.Context, cfg *lambda.Config, na admin.NewAdminDTO, now t
 		PhoneNumber: na.PhoneNumber,
 		Password:    na.Password,
 		IsActive:    true,
+		Name:        fmt.Sprintf("%s %s", na.Name, na.Surname),
 	}
 	if err := cfg.AWSClient.Cognito.CreateUser(co); err != nil {
 		return admin.Admin{}, fmt.Errorf("can't create user, exception during cognito registration: %v", err)
@@ -51,26 +61,116 @@ func Create(ctx context.Context, cfg *lambda.Config, na admin.NewAdminDTO, now t
 	return newAdmin, nil
 }
 
-//func Query(ctx context.Context, cfg *lambda.Config) error {
-//	return admin.Query(ctx, cfg.Db)
-//}
-
-func QueryByID(ctx context.Context, cfg *lambda.Config) {
-
+func Query(ctx context.Context, cfg *lambda.Config, page, rowsPerPage int) ([]admin.Admin, error) {
+	res, err := admin.Query(ctx, cfg.Db)
+	if err != nil {
+		return nil, fmt.Errorf("can't retrieve admin: %v", err)
+	}
+	return res, nil
 }
 
-func Update() {
-
+func QueryByID(ctx context.Context, cfg *lambda.Config, id string) (admin.Admin, error) {
+	res, err := admin.QueryByID(ctx, cfg.Db, id)
+	if err != nil {
+		return admin.Admin{}, fmt.Errorf("can't retrieve admin: %v", err)
+	}
+	return res, nil
 }
 
-func Delete() {
+func Update(ctx context.Context, cfg *lambda.Config, id string, ua admin.UpdateAdminDTO, now time.Time) (admin.Admin, error) {
+	res, err := admin.QueryByID(ctx, cfg.Db, id)
+	if err != nil {
+		return admin.Admin{}, fmt.Errorf("can't retrieve admin: %v", err)
+	}
+	cognitoData := aws.CognitoUser{
+		ID:          res.CognitoID,
+		Email:       res.Email,
+		PhoneNumber: res.PhoneNumber,
+		Name:        res.Name,
+	}
 
+	if ua.Name != nil {
+		cognitoData.Name = *ua.Name
+		res.Name = *ua.Name
+	}
+	if ua.Email != nil {
+		cognitoData.Email = *ua.Email
+		res.Email = *ua.Email
+	}
+	if ua.Surname != nil {
+		res.Surname = *ua.Surname
+	}
+	if ua.Role != nil {
+		res.Role = *ua.Role
+	}
+	if ua.PhoneNumber != nil {
+		cognitoData.PhoneNumber = *ua.PhoneNumber
+		res.PhoneNumber = *ua.PhoneNumber
+	}
+
+	//Update user data in dynamodb
+	if err := admin.Update(ctx, cfg.Db, res); err != nil {
+		return admin.Admin{}, fmt.Errorf("can't update admin: %v", err)
+	}
+	//Update user data in cognito
+	if err := cfg.AWSClient.Cognito.UpdateUser(cognitoData); err != nil {
+		return admin.Admin{}, fmt.Errorf("can't update user: %v", err)
+	}
+
+	return res, nil
 }
 
-func Login() {
+func Delete(ctx context.Context, cfg *lambda.Config, id string, now time.Time) (admin.Admin, error) {
+	res, err := admin.QueryByID(ctx, cfg.Db, id)
+	if err != nil {
+		return admin.Admin{}, fmt.Errorf("can't find admin: %v", err)
+	}
 
+	if err := cfg.AWSClient.Cognito.DeleteUser(res.CognitoID); err != nil {
+		return admin.Admin{}, fmt.Errorf("can't delete admin from cognito: %v", err)
+	}
+
+	if err := admin.Delete(ctx, cfg.Db, id); err != nil {
+		return admin.Admin{}, fmt.Errorf("can't delete admin: %v", err)
+	}
+
+	return res, nil
 }
 
-func RefreshToken() {
+func Login(ctx context.Context, cfg *lambda.Config, data admin.LoginAdminDTO) (Session, error) {
+	res, err := admin.QueryByEmail(ctx, cfg.Db, data.Email)
+	if err != nil {
+		return Session{}, fmt.Errorf("can't find admin: %v", err)
+	}
 
+	tokens, err := cfg.AWSClient.Cognito.AuthenticateUser(res.ID, data.Password)
+	if err != nil {
+		return Session{}, fmt.Errorf("can't authenticate user: %v", err)
+	}
+
+	return Session{
+		Admin:        res,
+		RefreshToken: tokens.RefreshToken,
+		Token:        tokens.Token,
+		ExpiresIn:    tokens.ExpireIn,
+	}, nil
+}
+
+func RefreshToken(ctx context.Context, cfg *lambda.Config, data admin.RefreshTokenDTO) (Session, error) {
+	res, err := admin.QueryByID(ctx, cfg.Db, data.ID)
+	if err != nil {
+		return Session{}, fmt.Errorf("can't find admin: %v", err)
+	}
+
+	tokens, err := cfg.AWSClient.Cognito.RefreshToken(data.RefreshToken)
+	if err != nil {
+		return Session{}, fmt.Errorf("can't authenticate user: %v", err)
+	}
+
+	return Session{
+		Admin:        res,
+		RefreshToken: tokens.RefreshToken,
+		Token:        tokens.Token,
+		ExpiresIn:    tokens.ExpireIn,
+	}, nil
 }

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/Mahamadou828/AOAC/business/sys/validate"
 	"net/http"
@@ -20,24 +19,21 @@ func main() {
 }
 
 func handler(ctx context.Context, r events.APIGatewayProxyRequest, cfg *lambda.Config) (events.APIGatewayProxyResponse, error) {
-	//Get request trace
-	v, err := lambda.GetRequestTrace(ctx)
-	if err != nil {
-		return lambda.Response(ctx, http.StatusInternalServerError, fmt.Errorf("unable to get request trace: %v", err))
-	}
 	//Unmarshal body request and verify it
-	var data admin.NewAdminDTO
-	if err := json.Unmarshal([]byte(r.Body), &data); err != nil {
+	var data admin.RefreshTokenDTO
+	if err := lambda.DecodeBody(r.Body, &data); err != nil {
 		return lambda.SendError(ctx, http.StatusBadRequest, fmt.Errorf("unable to unmarshal body: %v", err))
 	}
 	if err := validate.Check(data); err != nil {
 		return lambda.SendError(ctx, http.StatusBadRequest, fmt.Errorf("invalid body: %v", err))
 	}
+
 	//Create new admin
-	newAdmin, err := core.Create(ctx, cfg, data, v.Now)
+	session, err := core.RefreshToken(ctx, cfg, data)
 	if err != nil {
-		return lambda.SendError(ctx, http.StatusBadRequest, fmt.Errorf("can't create new admin: %v", err))
+		return lambda.SendError(ctx, http.StatusBadRequest, fmt.Errorf("can't login an admin: %v", err))
 
 	}
-	return lambda.Response(ctx, http.StatusOK, newAdmin)
+
+	return lambda.Response(ctx, http.StatusOK, session)
 }

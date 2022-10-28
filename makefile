@@ -16,6 +16,9 @@ start-api-v1:
 
 start: build-v1 start-api-v1
 
+validate:
+	sam validate -t config/v1/template.yml
+
 admin:
 	go run app/tools/admin/main.go
 

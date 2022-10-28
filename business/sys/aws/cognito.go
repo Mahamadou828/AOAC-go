@@ -21,6 +21,7 @@ type CognitoUser struct {
 	PhoneNumber string
 	Password    string
 	IsActive    bool
+	Name        string
 }
 
 type Session struct {
@@ -50,6 +51,10 @@ func (c *Cognito) CreateUser(u CognitoUser) error {
 			{
 				Name:  sdkaws.String("phone_number"),
 				Value: sdkaws.String(u.PhoneNumber),
+			},
+			{
+				Name:  sdkaws.String("name"),
+				Value: sdkaws.String(u.Name),
 			},
 			{
 				Name:  sdkaws.String("custom:isActive"),
@@ -143,13 +148,16 @@ func (c *Cognito) RefreshToken(token string) (Session, error) {
 
 	out, err := c.identityProvider.InitiateAuth(&inp)
 
+	fmt.Println(*out.AuthenticationResult)
+
 	if err != nil {
 		return Session{}, err
 	}
-
+	//fmt.Println(*out.AuthenticationResult)
 	return Session{
-		Token:    *out.AuthenticationResult.AccessToken,
-		ExpireIn: *out.AuthenticationResult.ExpiresIn,
+		Token:        *out.AuthenticationResult.AccessToken,
+		ExpireIn:     *out.AuthenticationResult.ExpiresIn,
+		RefreshToken: token,
 	}, nil
 }
 
@@ -179,6 +187,16 @@ func (c *Cognito) ResendValidateCode(sub string) error {
 	}
 
 	return nil
+}
+
+func (c *Cognito) UpdateUser(user CognitoUser) error {
+	attr := []*cognitoidentityprovider.AttributeType{
+		{Name: sdkaws.String("email"), Value: sdkaws.String(user.Email)},
+		{Name: sdkaws.String("phone_number"), Value: sdkaws.String(user.PhoneNumber)},
+		{Name: sdkaws.String("name"), Value: sdkaws.String(user.Email)},
+	}
+
+	return c.updateUserAttribute(user.ID, attr)
 }
 
 func (c *Cognito) updateUserAttribute(sub string, attr []*cognitoidentityprovider.AttributeType) error {

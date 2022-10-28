@@ -113,6 +113,95 @@ func GetItems[S ~[]T, T any](ctx context.Context, client *Database, tableName st
 	return nil
 }
 
+// GetItemByUniqueKey return an item by the given key, the key should be unique
+// because we return the first find element
+func GetItemByUniqueKey[T any](ctx context.Context, client *Database, keyValue string, keyName string, tableName string, dest *T) error {
+	input := &dynamodb.QueryInput{
+		TableName: formatTableName(client.env, tableName),
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			fmt.Sprintf(":%s", keyName): {
+				S: sdkaws.String(keyValue),
+			},
+		},
+		KeyConditionExpression: sdkaws.String(fmt.Sprintf("%s = :%s", keyName, keyName)),
+	}
+
+	result, err := client.svc.QueryWithContext(ctx, input)
+	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
+			case dynamodb.ErrCodeProvisionedThroughputExceededException:
+				return fmt.Errorf(dynamodb.ErrCodeProvisionedThroughputExceededException, aerr.Error())
+			case dynamodb.ErrCodeResourceNotFoundException:
+				return fmt.Errorf(dynamodb.ErrCodeResourceNotFoundException, aerr.Error())
+			case dynamodb.ErrCodeRequestLimitExceeded:
+				return fmt.Errorf(dynamodb.ErrCodeRequestLimitExceeded, aerr.Error())
+			case dynamodb.ErrCodeInternalServerError:
+				return fmt.Errorf(dynamodb.ErrCodeInternalServerError, aerr.Error())
+			default:
+				return fmt.Errorf(aerr.Error())
+			}
+		} else {
+			// Print the error, cast err to awserr.Error to get the Code and
+			// Message from an error.
+			return fmt.Errorf(err.Error())
+		}
+	}
+
+	item := result.Items[0]
+
+	if err := dynamodbattribute.UnmarshalMap(item, &dest); err != nil {
+		return fmt.Errorf("can't unmarshal dynamodb attribute %v", err)
+	}
+
+	return nil
+}
+
+// GetItemByIndex return an item by the given index, the index should be created on the table
+// because we return the first find element
+func GetItemByIndex[T any](ctx context.Context, client *Database, keyValue string, keyName string, index string, tableName string, dest *T) error {
+	input := &dynamodb.QueryInput{
+		TableName: formatTableName(client.env, tableName),
+		IndexName: sdkaws.String(index),
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			fmt.Sprintf(":%s", keyName): {
+				S: sdkaws.String(keyValue),
+			},
+		},
+		KeyConditionExpression: sdkaws.String(fmt.Sprintf("%s = :%s", keyName, keyName)),
+	}
+
+	result, err := client.svc.QueryWithContext(ctx, input)
+	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
+			case dynamodb.ErrCodeProvisionedThroughputExceededException:
+				return fmt.Errorf(dynamodb.ErrCodeProvisionedThroughputExceededException, aerr.Error())
+			case dynamodb.ErrCodeResourceNotFoundException:
+				return fmt.Errorf(dynamodb.ErrCodeResourceNotFoundException, aerr.Error())
+			case dynamodb.ErrCodeRequestLimitExceeded:
+				return fmt.Errorf(dynamodb.ErrCodeRequestLimitExceeded, aerr.Error())
+			case dynamodb.ErrCodeInternalServerError:
+				return fmt.Errorf(dynamodb.ErrCodeInternalServerError, aerr.Error())
+			default:
+				return fmt.Errorf(aerr.Error())
+			}
+		} else {
+			// Print the error, cast err to awserr.Error to get the Code and
+			// Message from an error.
+			return fmt.Errorf(err.Error())
+		}
+	}
+
+	item := result.Items[0]
+
+	if err := dynamodbattribute.UnmarshalMap(item, &dest); err != nil {
+		return fmt.Errorf("can't unmarshal dynamodb attribute %v", err)
+	}
+
+	return nil
+}
+
 // PutOrCreateItem will create a new item if the provided item key does not exist. Otherwise, it will update the item.
 func PutOrCreateItem[T interface{}](ctx context.Context, client *Database, tableName string, data T) error {
 	item, err := dynamodbattribute.MarshalMap(data)

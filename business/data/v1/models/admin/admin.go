@@ -20,9 +20,27 @@ func Create(ctx context.Context, db *database.Database, na Admin) error {
 func Query(ctx context.Context, db *database.Database) ([]Admin, error) {
 	var as []Admin
 	if err := database.GetItems[[]Admin](ctx, db, "admin", &as); err != nil {
-		return as, err
+		return as, fmt.Errorf("can't get admin: %v", err)
 	}
 	return as, nil
+}
+
+// QueryByID fetch an admin by the given ID
+func QueryByID(ctx context.Context, db *database.Database, id string) (Admin, error) {
+	var a Admin
+	if err := database.GetItemByUniqueKey[Admin](ctx, db, id, "id", "admin", &a); err != nil {
+		return a, fmt.Errorf("can't get admin by ID: %v", err)
+	}
+	return a, nil
+}
+
+// QueryByEmail fetch an admin by the given Email
+func QueryByEmail(ctx context.Context, db *database.Database, email string) (Admin, error) {
+	var a Admin
+	if err := database.GetItemByIndex[Admin](ctx, db, email, "email", "emailIndex", "admin", &a); err != nil {
+		return a, fmt.Errorf("can't get admin by email: %v", err)
+	}
+	return a, nil
 }
 
 // Update admin info
