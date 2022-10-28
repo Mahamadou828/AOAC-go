@@ -94,6 +94,7 @@ fabric.properties
 
 # Ignore local file
 local
+env.local.json
 
 #request env file
 http-client.private.env.json

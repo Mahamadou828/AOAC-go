@@ -1,4 +1,4 @@
-package web
+package lambda
 
 import (
 	"context"
@@ -14,9 +14,9 @@ type ctxKey int
 // CtxKey is how request values are stored/retrieved.
 const CtxKey ctxKey = 1
 
-//RequestTrace is a unique value attach to each request
-//It's contains information about the request context
-//and it's use in logging tracing and sentry output
+// RequestTrace is a unique value attach to each request
+// It's contains information about the request context
+// and it's use in logging tracing and sentry output
 type RequestTrace struct {
 	ID         string
 	Now        time.Time
@@ -29,7 +29,7 @@ func GetRequestTrace(ctx context.Context) (*RequestTrace, error) {
 	v, ok := ctx.Value(CtxKey).(*RequestTrace)
 
 	if !ok {
-		return nil, errors.New("web request trace not found")
+		return nil, errors.New("lambda request trace not found")
 	}
 
 	return v, nil
@@ -50,7 +50,7 @@ func GetTraceID(ctx context.Context) string {
 func SetStatusCode(ctx context.Context, statusCode int) error {
 	v, ok := ctx.Value(CtxKey).(*RequestTrace)
 	if !ok {
-		return errors.New("web value missing from context")
+		return errors.New("lambda value missing from context")
 	}
 	v.StatusCode = statusCode
 	return nil

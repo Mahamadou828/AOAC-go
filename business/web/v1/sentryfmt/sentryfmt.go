@@ -1,18 +1,19 @@
 // Package sentryfmt is a wrapper around the sentry package. This package format
-//and send the errors to the sentry hub. The events are formatted to included
-//more data and useful information
+// and send the errors to the sentry hub. The events are formatted to included
+// more data and useful information
 package sentryfmt
 
 import (
-	"github.com/Mahamadou828/AOAC/foundation/web"
-	"github.com/aws/aws-lambda-go/events"
-	"github.com/getsentry/sentry-go"
 	"reflect"
 	"strings"
 	"time"
+
+	"github.com/Mahamadou828/AOAC/foundation/lambda"
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/getsentry/sentry-go"
 )
 
-func CaptureError(rt *web.RequestTrace, r events.APIGatewayProxyRequest, err error) {
+func CaptureError(rt *lambda.RequestTrace, r events.APIGatewayProxyRequest, err error) {
 	event := eventFromException(err, sentry.LevelError)
 	//send error data
 	event.Exception[0].Type = r.Path

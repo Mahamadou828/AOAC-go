@@ -26,7 +26,7 @@ Parameters:
 
 Globals:
   Function:
-    MemorySize: 1024
+    MemorySize: 2048
     Runtime: go1.x
     Timeout: 15
     Architectures:
@@ -45,6 +45,8 @@ Resources:
       Environment:
         Variables:
           SECRET_ENV: !Join ['', ['{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}']]
+          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoUserPoolId:', 'ENV', '}}' ] ]
+          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoClientId:', 'ENV', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -52,13 +54,121 @@ Resources:
             Path: /v1/hello
             Method: GET
 
-Outputs:
-  HelloWorldAPI:
-    Description: "Api Gateway endpoint for hello world"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  HelloWorldFunction:
-    Description: "First Lambda Function ARN"
-    Value: !GetAtt HelloWorldFunction.Arn
-  HelloWorldFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World function"
-    Value: !GetAtt HelloWorldFunctionRole.Arn
+  CreateAdminFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../../app/lambda/v1/create-admin/
+      Handler: create-admin
+      Environment:
+        Variables:
+          SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
+          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoUserPoolId:', 'ENV', '}}' ] ]
+          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoClientId:', 'ENV', '}}' ] ]
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /v1/admin
+            Method: Post
+
+  GetAdminFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../../app/lambda/v1/get-admin/
+      Handler: get-admin
+      Environment:
+        Variables:
+          SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
+          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoUserPoolId:', 'ENV', '}}' ] ]
+          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoClientId:', 'ENV', '}}' ] ]
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /v1/admin
+            Method: Get
+
+  GetAdminByIDFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../../app/lambda/v1/get-admin-by-id/
+      Handler: get-admin-by-id
+      Environment:
+        Variables:
+          SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
+          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoUserPoolId:', 'ENV', '}}' ] ]
+          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoClientId:', 'ENV', '}}' ] ]
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /v1/admin/{id}
+            Method: Get
+
+  UpdateAdminFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../../app/lambda/v1/update-admin/
+      Handler: update-admin-by-id
+      Environment:
+        Variables:
+          SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
+          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoUserPoolId:', 'ENV', '}}' ] ]
+          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoClientId:', 'ENV', '}}' ] ]
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /v1/admin/{id}
+            Method: Put
+
+  DeleteAdminFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../../app/lambda/v1/delete-admin/
+      Handler: delete-admin-by-id
+      Environment:
+        Variables:
+          SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
+          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoUserPoolId:', 'ENV', '}}' ] ]
+          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoClientId:', 'ENV', '}}' ] ]
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /v1/admin/{id}
+            Method: Delete
+
+  LoginAdminFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../../app/lambda/v1/admin-login/
+      Handler: login-admin
+      Environment:
+        Variables:
+          SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
+          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoUserPoolId:', 'ENV', '}}' ] ]
+          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoClientId:', 'ENV', '}}' ] ]
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /v1/admin/login
+            Method: Post
+            
+  RefreshAdminSessionFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../../app/lambda/v1/admin-refresh-token/
+      Handler: refresh-admin-session
+      Environment:
+        Variables:
+          SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
+          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoUserPoolId:', 'ENV', '}}' ] ]
+          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoClientId:', 'ENV', '}}' ] ]
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /v1/admin/login/refresh
+            Method: Post
