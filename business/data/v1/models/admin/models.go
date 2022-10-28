@@ -42,7 +42,7 @@ type NewAdminDTO struct {
 type UpdateAdminDTO struct {
 	Name        *string `json:"name"`
 	Surname     *string `json:"surname"`
-	Email       *string `json:"email" validate:"email,omitempty"`
+	Email       *string `json:"email" validate:"omitempty,email"`
 	PhoneNumber *string `json:"phoneNumber"`
 	Role        *string `json:"role"`
 }

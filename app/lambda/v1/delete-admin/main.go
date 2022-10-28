@@ -29,7 +29,7 @@ func handler(ctx context.Context, r events.APIGatewayProxyRequest, cfg *lambda.C
 	if !ok {
 		return lambda.SendError(ctx, http.StatusBadRequest, fmt.Errorf("missing required parameter: id"))
 	}
-	if err := validate.Check(id); err != nil {
+	if err := validate.CheckID(id); err != nil {
 		return lambda.SendError(ctx, http.StatusBadRequest, fmt.Errorf("invalid id: %v", err))
 	}
 
