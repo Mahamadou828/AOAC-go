@@ -45,8 +45,8 @@ Resources:
       Environment:
         Variables:
           SECRET_ENV: !Join ['', ['{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}']]
-          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoUserPoolId:', 'ENV', '}}' ] ]
-          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoClientId:', 'ENV', '}}' ] ]
+          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
+          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -62,8 +62,8 @@ Resources:
       Environment:
         Variables:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
-          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoUserPoolId:', 'ENV', '}}' ] ]
-          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoClientId:', 'ENV', '}}' ] ]
+          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
+          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -79,8 +79,8 @@ Resources:
       Environment:
         Variables:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
-          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoUserPoolId:', 'ENV', '}}' ] ]
-          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoClientId:', 'ENV', '}}' ] ]
+          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
+          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -96,8 +96,8 @@ Resources:
       Environment:
         Variables:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
-          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoUserPoolId:', 'ENV', '}}' ] ]
-          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoClientId:', 'ENV', '}}' ] ]
+          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
+          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -113,8 +113,8 @@ Resources:
       Environment:
         Variables:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
-          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoUserPoolId:', 'ENV', '}}' ] ]
-          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoClientId:', 'ENV', '}}' ] ]
+          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
+          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -130,8 +130,8 @@ Resources:
       Environment:
         Variables:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
-          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoUserPoolId:', 'ENV', '}}' ] ]
-          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoClientId:', 'ENV', '}}' ] ]
+          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
+          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -147,8 +147,8 @@ Resources:
       Environment:
         Variables:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
-          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoUserPoolId:', 'ENV', '}}' ] ]
-          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoClientId:', 'ENV', '}}' ] ]
+          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
+          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -164,8 +164,8 @@ Resources:
       Environment:
         Variables:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
-          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoUserPoolId:', 'ENV', '}}' ] ]
-          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoClientId:', 'ENV', '}}' ] ]
+          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
+          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
