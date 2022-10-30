@@ -3,6 +3,11 @@ package admin
 import (
 	"context"
 	"fmt"
+	"github.com/aws/aws-lambda-go/events"
+	"io"
+	"mime"
+	"mime/multipart"
+	"strings"
 	"time"
 
 	"github.com/Mahamadou828/AOAC/business/data/v1/models/admin"
@@ -173,4 +178,35 @@ func RefreshToken(ctx context.Context, cfg *lambda.Config, data admin.RefreshTok
 		Token:        tokens.Token,
 		ExpiresIn:    tokens.ExpireIn,
 	}, nil
+}
+
+func UploadProfilePicture(ctx context.Context, cfg *lambda.Config, r events.APIGatewayProxyRequest) (string, error) {
+	var fileBytes []byte
+	var contentType string
+
+	contentType, params, err := mime.ParseMediaType(r.Headers["Content-Type"])
+	if err != nil || !strings.HasPrefix(contentType, "multipart/") {
+		return "", fmt.Errorf("invalid content-type %s", contentType)
+	}
+	reader := multipart.NewReader(strings.NewReader(r.Body), params["boundary"])
+	for {
+		part, err := reader.NextPart()
+		fmt.Println(err)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return "", fmt.Errorf("failed to parse file: %v", err)
+		}
+		if part.FormName() == "image" {
+			fmt.Println("\nI FIND THE IMAGE")
+		}
+		defer part.Close()
+		fileBytes, err = io.ReadAll(part)
+		if err != nil {
+			return "", fmt.Errorf("failed to read file: %v", err)
+		}
+	}
+
+	return string(fileBytes), nil
 }

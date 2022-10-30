@@ -25,8 +25,16 @@ Parameters:
 
 
 Globals:
+  Api:
+    BinaryMediaTypes:
+      - '*~1*'
+      - '*/*'
+      - 'multipart~1form-data'
+      - 'multipart/form-data'
+      - 'application~1octet-stream'
+      - 'application/octet-stream'
   Function:
-    MemorySize: 2048
+    MemorySize: 8192
     Runtime: go1.x
     Timeout: 15
     Architectures:
@@ -171,4 +179,21 @@ Resources:
           Type: Api
           Properties:
             Path: /v1/admin/login/refresh
+            Method: Post
+
+  AdminUploadPicture:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../../app/lambda/v1/admin-upload-profile-pick/
+      Handler: admin-upload-profile-picture
+      Environment:
+        Variables:
+          SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
+          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoUserPoolId:', 'ENV', '}}' ] ]
+          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoClientId:', 'ENV', '}}' ] ]
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /v1/admin/profile/picture/upload
             Method: Post
