@@ -1,14 +1,9 @@
 package hello
 
 import (
-	"context"
 	"errors"
 	"fmt"
-	"github.com/Mahamadou828/AOAC/app/tools/config"
-	"github.com/Mahamadou828/AOAC/business/sys/aws"
-	"github.com/Mahamadou828/AOAC/foundation/web"
-	"github.com/aws/aws-lambda-go/events"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -23,45 +18,31 @@ var (
 	ErrNon200Response = errors.New("Non 200 Response found")
 )
 
-func Hello(ctx context.Context, r events.APIGatewayProxyRequest, client *aws.Client) (events.APIGatewayProxyResponse, error) {
-	cfg := struct {
-		Env       string `conf:"env:ENV,required"`
-		SecretEnv string `conf:"env:SECRET_ENV,required"`
-	}{}
+type RspHello struct {
+	IP        string `json:"ip"`
+	Path      string `json:"path"`
+	Env       string `json:"env"`
+	SecretEnv string `json:"secretEnv"`
+}
 
-	if err := config.ParseLambdaCfg(&cfg); err != nil {
-		return events.APIGatewayProxyResponse{}, fmt.Errorf("can't parse config: %v", err)
-	}
-
+func Hello(env, secretEnv, path string) (RspHello, error) {
 	resp, err := http.Get(DefaultHTTPGetAddress)
 	if err != nil {
-		return events.APIGatewayProxyResponse{}, err
+		return RspHello{}, fmt.Errorf("error getting HTTP response: %v", err)
 	}
 
 	if resp.StatusCode != 200 {
-		return events.APIGatewayProxyResponse{}, ErrNon200Response
+		return RspHello{}, ErrNon200Response
 	}
 
-	ip, err := ioutil.ReadAll(resp.Body)
+	ip, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return events.APIGatewayProxyResponse{}, err
+		return RspHello{}, err
 	}
 
 	if len(ip) == 0 {
-		return events.APIGatewayProxyResponse{}, ErrNoIP
+		return RspHello{}, ErrNoIP
 	}
 
-	data := struct {
-		IP        string `json:"ip"`
-		Path      string `json:"path"`
-		Env       string `json:"env"`
-		SecretEnv string `json:"secretEnv"`
-	}{
-		IP:        string(ip),
-		Path:      r.Path,
-		Env:       cfg.Env,
-		SecretEnv: cfg.SecretEnv,
-	}
-
-	return web.Response(ctx, 200, data)
+	return RspHello{string(ip), path, env, secretEnv}, nil
 }
