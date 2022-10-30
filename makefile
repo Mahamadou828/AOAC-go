@@ -16,6 +16,8 @@ start-api-v1:
 
 start: build-v1 start-api-v1
 
+build: build-v1
+
 validate:
 	sam validate -t config/v1/template.yml
 
