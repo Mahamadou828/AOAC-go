@@ -7,6 +7,13 @@ tidy:
 	go mod vendor
 
 #================================================================= V1
+deploy-cdk-stack:
+	cdk deploy --all -O ./infra.output.spec.json
+	go run app/tools/cfnparser/main.go --file-path=infra.output.spec.json --service=$(SERVICE)
+
+destroy-cdk-stack:
+	cdk destroy --all
+
 build-v1:
 	sam validate -t config/v1/template.yml
 	sam build -t config/v1/template.yml
@@ -24,3 +31,7 @@ admin:
 
 test:
 	go test -v ./...
+
+deploy: deploy-cdk-stack
+
+destroy: destroy-cdk-stack

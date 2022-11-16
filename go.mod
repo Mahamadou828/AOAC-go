@@ -3,8 +3,12 @@ module github.com/Mahamadou828/AOAC
 go 1.18
 
 require (
+	github.com/aws/aws-cdk-go/awscdk/v2 v2.50.0
+	github.com/aws/aws-cdk-go/awscdkcognitoidentitypoolalpha/v2 v2.50.0-alpha.0
 	github.com/aws/aws-lambda-go v1.32.0
 	github.com/aws/aws-sdk-go v1.44.108
+	github.com/aws/constructs-go/constructs/v10 v10.1.140
+	github.com/aws/jsii-runtime-go v1.70.0
 	github.com/getsentry/sentry-go v0.13.0
 	github.com/go-playground/locales v0.13.0
 	github.com/go-playground/universal-translator v0.17.0
@@ -13,8 +17,15 @@ require (
 )
 
 require (
+	github.com/Masterminds/semver/v3 v3.1.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/leodido/go-urn v1.2.0 // indirect
+	github.com/mattn/go-isatty v0.0.16 // indirect
+	github.com/yuin/goldmark v1.4.13 // indirect
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
-	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
+	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
+	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
+	golang.org/x/net v0.0.0-20220722155237-a158d28d115b // indirect
+	golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab // indirect
+	golang.org/x/tools v0.1.12 // indirect
 )

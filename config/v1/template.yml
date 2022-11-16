@@ -184,6 +184,9 @@ Resources:
   AdminUploadPicture:
     Type: AWS::Serverless::Function
     Properties:
+      Policies:
+        - AWSLambdaExecute
+        - AWSLambdaDynamoDBExecutionRole
       CodeUri: ../../app/lambda/v1/admin-upload-profile-pick/
       Handler: admin-upload-profile-picture
       Environment:
@@ -197,3 +200,11 @@ Resources:
           Properties:
             Path: /v1/admin/profile/picture/upload
             Method: Post
+
+  ##Create s3 bucket for admin profile picture
+  AdminProfilePictureBucket:
+    Type: AWS::S3::BUCKET
+    Properties:
+      BucketName: !Join ['admin-profile-picture', [!Ref Env]]
+      Tags:
+        - !Ref Env
