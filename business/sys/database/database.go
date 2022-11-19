@@ -53,19 +53,19 @@ func DeleteItem(ctx context.Context, client *Database, tableName, id string) err
 		if aerr, ok := err.(awserr.Error); ok {
 			switch aerr.Code() {
 			case dynamodb.ErrCodeConditionalCheckFailedException:
-				return fmt.Errorf(dynamodb.ErrCodeConditionalCheckFailedException, aerr.Error())
+				return fmt.Errorf("%v: %v", dynamodb.ErrCodeConditionalCheckFailedException, aerr.Error())
 			case dynamodb.ErrCodeProvisionedThroughputExceededException:
-				return fmt.Errorf(dynamodb.ErrCodeProvisionedThroughputExceededException, aerr.Error())
+				return fmt.Errorf("%v: %v", dynamodb.ErrCodeProvisionedThroughputExceededException, aerr.Error())
 			case dynamodb.ErrCodeResourceNotFoundException:
-				return fmt.Errorf(dynamodb.ErrCodeResourceNotFoundException, aerr.Error())
+				return fmt.Errorf("%v: %v", dynamodb.ErrCodeResourceNotFoundException, aerr.Error())
 			case dynamodb.ErrCodeItemCollectionSizeLimitExceededException:
-				return fmt.Errorf(dynamodb.ErrCodeItemCollectionSizeLimitExceededException, aerr.Error())
+				return fmt.Errorf("%v: %v", dynamodb.ErrCodeItemCollectionSizeLimitExceededException, aerr.Error())
 			case dynamodb.ErrCodeTransactionConflictException:
-				return fmt.Errorf(dynamodb.ErrCodeTransactionConflictException, aerr.Error())
+				return fmt.Errorf("%v: %v", dynamodb.ErrCodeTransactionConflictException, aerr.Error())
 			case dynamodb.ErrCodeRequestLimitExceeded:
-				return fmt.Errorf(dynamodb.ErrCodeRequestLimitExceeded, aerr.Error())
+				return fmt.Errorf("%v: %v", dynamodb.ErrCodeRequestLimitExceeded, aerr.Error())
 			case dynamodb.ErrCodeInternalServerError:
-				return fmt.Errorf(dynamodb.ErrCodeInternalServerError, aerr.Error())
+				return fmt.Errorf("%v: %v", dynamodb.ErrCodeInternalServerError, aerr.Error())
 			default:
 				return fmt.Errorf(aerr.Error())
 			}
@@ -89,13 +89,13 @@ func GetItems[S ~[]T, T any](ctx context.Context, client *Database, tableName st
 		if aerr, ok := err.(awserr.Error); ok {
 			switch aerr.Code() {
 			case dynamodb.ErrCodeProvisionedThroughputExceededException:
-				return fmt.Errorf(dynamodb.ErrCodeProvisionedThroughputExceededException, aerr.Error())
+				return fmt.Errorf("%v: %v", dynamodb.ErrCodeProvisionedThroughputExceededException, aerr.Error())
 			case dynamodb.ErrCodeResourceNotFoundException:
-				return fmt.Errorf(dynamodb.ErrCodeResourceNotFoundException, aerr.Error())
+				return fmt.Errorf("%v: %v", dynamodb.ErrCodeResourceNotFoundException, aerr.Error())
 			case dynamodb.ErrCodeRequestLimitExceeded:
-				return fmt.Errorf(dynamodb.ErrCodeRequestLimitExceeded, aerr.Error())
+				return fmt.Errorf("%v: %v", dynamodb.ErrCodeRequestLimitExceeded, aerr.Error())
 			case dynamodb.ErrCodeInternalServerError:
-				return fmt.Errorf(dynamodb.ErrCodeInternalServerError, aerr.Error())
+				return fmt.Errorf("%v: %v", dynamodb.ErrCodeInternalServerError, aerr.Error())
 			default:
 				return fmt.Errorf(aerr.Error())
 			}
