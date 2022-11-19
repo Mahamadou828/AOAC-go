@@ -14,7 +14,6 @@ import (
 )
 
 func main() {
-	fmt.Println("test")
 	sdklambda.Start(web.NewHandler(handler))
 }
 

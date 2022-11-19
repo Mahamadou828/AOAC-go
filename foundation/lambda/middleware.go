@@ -10,6 +10,7 @@ import (
 type Config struct {
 	AWSClient *aws.Client
 	Db        *database.Database
+	Env       string
 }
 
 type Handler func(ctx context.Context, request events.APIGatewayProxyRequest, cfg *Config) (events.APIGatewayProxyResponse, error)

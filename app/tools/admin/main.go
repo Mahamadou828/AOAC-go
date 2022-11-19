@@ -38,7 +38,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	client, err := aws.New(cfg.Service, cfg.Env)
+	client, err := aws.New(aws.Config{
+		Environment: cfg.Env,
+		ServiceName: cfg.Service,
+	})
 	if err != nil {
 		fmt.Printf("can't initialized aws session %v", err)
 	}

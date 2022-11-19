@@ -59,6 +59,7 @@ func NewHandler(handler lambda.Handler) LambdaHandler {
 	cfg := lambda.Config{
 		AWSClient: client,
 		Db:        database.Open(client, os.Getenv("ENV")),
+		Env:       os.Getenv("ENV"),
 	}
 
 	lmHandler := func(r events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {

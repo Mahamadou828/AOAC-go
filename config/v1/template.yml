@@ -25,8 +25,18 @@ Parameters:
 
 
 Globals:
+  Api:
+    BinaryMediaTypes:
+      - '*~1*'
+      - '*/*'
+      - 'multipart~1form-data'
+      - 'multipart/form-data'
+      - 'application~1octet-stream'
+      - 'application/octet-stream'
+      - 'application/json'
+      - 'application~json'
   Function:
-    MemorySize: 2048
+    MemorySize: 8192
     Runtime: go1.x
     Timeout: 15
     Architectures:
@@ -190,6 +200,4 @@ Resources:
           Properties:
             Path: /v1/admin/login/refresh
             Method: Post
-    Policies:
-      # Give the Lambda service access to poll your DynamoDB Stream
-      - AmazonDynamoDBFullAccess
+
