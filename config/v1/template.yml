@@ -33,6 +33,8 @@ Globals:
       - 'multipart/form-data'
       - 'application~1octet-stream'
       - 'application/octet-stream'
+      - 'application/json'
+      - 'application~json'
   Function:
     MemorySize: 8192
     Runtime: go1.x
@@ -180,31 +182,3 @@ Resources:
           Properties:
             Path: /v1/admin/login/refresh
             Method: Post
-
-  AdminUploadPicture:
-    Type: AWS::Serverless::Function
-    Properties:
-      Policies:
-        - AWSLambdaExecute
-        - AWSLambdaDynamoDBExecutionRole
-      CodeUri: ../../app/lambda/v1/admin-upload-profile-pick/
-      Handler: admin-upload-profile-picture
-      Environment:
-        Variables:
-          SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
-          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoUserPoolId:', 'ENV', '}}' ] ]
-          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':CognitoClientId:', 'ENV', '}}' ] ]
-      Events:
-        CatchAll:
-          Type: Api
-          Properties:
-            Path: /v1/admin/profile/picture/upload
-            Method: Post
-
-  ##Create s3 bucket for admin profile picture
-  AdminProfilePictureBucket:
-    Type: AWS::S3::BUCKET
-    Properties:
-      BucketName: !Join ['admin-profile-picture', [!Ref Env]]
-      Tags:
-        - !Ref Env

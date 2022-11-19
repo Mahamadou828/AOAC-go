@@ -3,8 +3,9 @@ package admin
 import (
 	"context"
 	"fmt"
+	"github.com/Mahamadou828/AOAC/app/tools/config"
 	"github.com/aws/aws-lambda-go/events"
-	"io"
+	"strings"
 	"time"
 
 	"github.com/Mahamadou828/AOAC/business/data/v1/models/admin"
@@ -16,15 +17,31 @@ import (
 //@todo implement pagination
 
 type Session struct {
-	Admin        admin.Admin `json:"admin"`
-	RefreshToken string      `json:"refreshToken"`
-	ExpiresIn    int64       `json:"expiresIn"`
-	Token        string      `json:"token"`
+	Admin          admin.Admin `json:"admin"`
+	RefreshToken   string      `json:"refreshToken"`
+	ExpiresIn      int64       `json:"expiresIn"`
+	Token          string      `json:"token"`
+	ProfilePickUrl string      `json:"profilePickUrl"`
 }
 
-func Create(ctx context.Context, cfg *lambda.Config, na admin.NewAdminDTO, now time.Time) (admin.Admin, error) {
+func Create(ctx context.Context, cfg *lambda.Config, r events.APIGatewayProxyRequest, now time.Time) (admin.Admin, error) {
 	//Generate admin id
 	id := validate.GenerateID()
+
+	na := admin.NewAdminDTO{}
+
+	if err := config.ParseForm(&na, r); err != nil {
+		return admin.Admin{}, fmt.Errorf("failed to parse form: %v", err)
+	}
+
+	if err := validate.Check(na); err != nil {
+		return admin.Admin{}, fmt.Errorf("invalid body: %v", err)
+	}
+
+	//upload profile picture to aws s3, the file key will be the id of the admin
+	if _, err := cfg.AWSClient.S3.UploadToBucket(strings.NewReader(na.ProfilePick), cfg.AWSClient.S3.S3AdminProfilePictureBucket, id, "image/jpeg"); err != nil {
+		return admin.Admin{}, fmt.Errorf("failed to upload profile picture: %v", err)
+	}
 
 	//create user inside cognito
 	co := aws.CognitoUser{
@@ -39,8 +56,6 @@ func Create(ctx context.Context, cfg *lambda.Config, na admin.NewAdminDTO, now t
 		return admin.Admin{}, fmt.Errorf("can't create user, exception during cognito registration: %v", err)
 	}
 
-	//upload profile picture to aws s3 and store the file name
-
 	//register user inside dynamodb
 	newAdmin := admin.Admin{
 		ID:           id,
@@ -51,7 +66,7 @@ func Create(ctx context.Context, cfg *lambda.Config, na admin.NewAdminDTO, now t
 		Role:         na.Role,
 		EnrolledUser: nil,
 		CognitoID:    id,
-		ProfilePick:  "",
+		ProfilePick:  id,
 		CreatedAt:    now,
 		DeleteAt:     time.Time{},
 		UpdatedAt:    now,
@@ -79,7 +94,16 @@ func QueryByID(ctx context.Context, cfg *lambda.Config, id string) (admin.Admin,
 	return res, nil
 }
 
-func Update(ctx context.Context, cfg *lambda.Config, id string, ua admin.UpdateAdminDTO, now time.Time) (admin.Admin, error) {
+func Update(ctx context.Context, cfg *lambda.Config, id string, r events.APIGatewayProxyRequest, now time.Time) (admin.Admin, error) {
+	var ua admin.UpdateAdminDTO
+
+	if err := config.ParseForm(&ua, r); err != nil {
+		return admin.Admin{}, fmt.Errorf("can't parse form: %v", err)
+	}
+	if err := validate.Check(ua); err != nil {
+		return admin.Admin{}, fmt.Errorf("invalid request: %v", err)
+	}
+
 	res, err := admin.QueryByID(ctx, cfg.Db, id)
 	if err != nil {
 		return admin.Admin{}, fmt.Errorf("can't retrieve admin: %v", err)
@@ -91,23 +115,31 @@ func Update(ctx context.Context, cfg *lambda.Config, id string, ua admin.UpdateA
 		Name:        res.Name,
 	}
 
-	if ua.Name != nil {
-		cognitoData.Name = *ua.Name
-		res.Name = *ua.Name
+	if ua.Name != "" {
+		cognitoData.Name = ua.Name
+		res.Name = ua.Name
 	}
-	if ua.Email != nil {
-		cognitoData.Email = *ua.Email
-		res.Email = *ua.Email
+	if ua.Email != "" {
+		cognitoData.Email = ua.Email
+		res.Email = ua.Email
 	}
-	if ua.Surname != nil {
-		res.Surname = *ua.Surname
+	if ua.Surname != "" {
+		res.Surname = ua.Surname
 	}
-	if ua.Role != nil {
-		res.Role = *ua.Role
+	if ua.Role != "" {
+		res.Role = ua.Role
 	}
-	if ua.PhoneNumber != nil {
-		cognitoData.PhoneNumber = *ua.PhoneNumber
-		res.PhoneNumber = *ua.PhoneNumber
+	if ua.PhoneNumber != "" {
+		cognitoData.PhoneNumber = ua.PhoneNumber
+		res.PhoneNumber = ua.PhoneNumber
+	}
+
+	if ua.ProfilePick != "" {
+		err := cfg.AWSClient.S3.UpdateObject(strings.NewReader(ua.ProfilePick), cfg.AWSClient.S3.S3AdminProfilePictureBucket, res.ProfilePick, "image/jpg")
+
+		if err != nil {
+			return admin.Admin{}, fmt.Errorf("failed to update profile: %v", err)
+		}
 	}
 
 	//Update user data in dynamodb
@@ -136,6 +168,9 @@ func Delete(ctx context.Context, cfg *lambda.Config, id string, now time.Time) (
 		return admin.Admin{}, fmt.Errorf("can't delete admin: %v", err)
 	}
 
+	if err := cfg.AWSClient.S3.DeleteObject(cfg.AWSClient.S3.S3AdminProfilePictureBucket, res.ProfilePick); err != nil {
+		return admin.Admin{}, fmt.Errorf("can't delete admin profile picture: %v", err)
+	}
 	return res, nil
 }
 
@@ -150,11 +185,14 @@ func Login(ctx context.Context, cfg *lambda.Config, data admin.LoginAdminDTO) (S
 		return Session{}, fmt.Errorf("can't authenticate user: %v", err)
 	}
 
+	url, _ := cfg.AWSClient.S3.GeneratePresignedUrl(cfg.AWSClient.S3.S3AdminProfilePictureBucket, res.ProfilePick)
+
 	return Session{
-		Admin:        res,
-		RefreshToken: tokens.RefreshToken,
-		Token:        tokens.Token,
-		ExpiresIn:    tokens.ExpireIn,
+		Admin:          res,
+		RefreshToken:   tokens.RefreshToken,
+		Token:          tokens.Token,
+		ExpiresIn:      tokens.ExpireIn,
+		ProfilePickUrl: url,
 	}, nil
 }
 
@@ -169,61 +207,13 @@ func RefreshToken(ctx context.Context, cfg *lambda.Config, data admin.RefreshTok
 		return Session{}, fmt.Errorf("can't authenticate user: %v", err)
 	}
 
+	url, _ := cfg.AWSClient.S3.GeneratePresignedUrl(cfg.AWSClient.S3.S3AdminProfilePictureBucket, res.ProfilePick)
+
 	return Session{
-		Admin:        res,
-		RefreshToken: tokens.RefreshToken,
-		Token:        tokens.Token,
-		ExpiresIn:    tokens.ExpireIn,
+		Admin:          res,
+		RefreshToken:   tokens.RefreshToken,
+		Token:          tokens.Token,
+		ExpiresIn:      tokens.ExpireIn,
+		ProfilePickUrl: url,
 	}, nil
 }
-
-func UploadProfilePicture(ctx context.Context, cfg *lambda.Config, r events.APIGatewayProxyRequest) (string, error) {
-	reader, err := lambda.NewReaderMultipart(r)
-	if err != nil {
-		return "", fmt.Errorf("can't create reader: %v from request", err)
-	}
-
-	part, err := reader.NextPart()
-	if err != nil {
-		return "", fmt.Errorf("can't read part: %v", err)
-	}
-	content, err := io.ReadAll(part)
-	if err != nil {
-		return "", fmt.Errorf("can't read content: %v of %v", err, part.FormName())
-	}
-	fmt.Println(string(content))
-	if err != nil {
-		return "", fmt.Errorf("can't marshal content: %v of %v", err, part.FormName())
-	}
-
-	return string(content), nil
-}
-
-//var fileBytes []byte
-//var contentType string
-//
-//contentType, params, err := mime.ParseMediaType(r.Headers["Content-Type"])
-//if err != nil || !strings.HasPrefix(contentType, "multipart/") {
-//	return "", fmt.Errorf("invalid content-type %s", contentType)
-//}
-//reader := multipart.NewReader(strings.NewReader(r.Body), params["boundary"])
-//for {
-//	part, err := reader.NextPart()
-//	fmt.Println(err == io.EOF)
-//	if err == io.EOF {
-//		break
-//	}
-//	if err != nil {
-//		return "", fmt.Errorf("failed to parse file: %v", err)
-//	}
-//	if part.FormName() == "text" {
-//		fmt.Println("\nI FIND THE Text")
-//	}
-//	defer part.Close()
-//	fileBytes, err = io.ReadAll(part)
-//	if err != nil {
-//		return "", fmt.Errorf("failed to read file: %v", err)
-//	}
-//}
-//
-//return string(fileBytes), nil

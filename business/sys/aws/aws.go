@@ -22,6 +22,7 @@ type Client struct {
 	SSM     *SSM
 	Sess    *session.Session
 	Cognito *Cognito
+	S3      *S3
 }
 
 func New(cfg Config) (*Client, error) {
@@ -42,5 +43,6 @@ func New(cfg Config) (*Client, error) {
 		SSM:     NewSSM(cfg.ServiceName, cfg.Environment, sess),
 		Cognito: NewCognito(sess, cfg.CognitoClientID, cfg.CognitoUserPoolID),
 		Sess:    sess,
+		S3:      NewS3(sess, cfg.Environment),
 	}, nil
 }

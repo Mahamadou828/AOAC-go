@@ -148,6 +148,10 @@ func GetItemByUniqueKey[T any](ctx context.Context, client *Database, keyValue s
 		}
 	}
 
+	if len(result.Items) <= 0 {
+		return fmt.Errorf(dynamodb.ErrCodeResourceNotFoundException)
+	}
+
 	item := result.Items[0]
 
 	if err := dynamodbattribute.UnmarshalMap(item, &dest); err != nil {
