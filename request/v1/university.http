@@ -1,0 +1,11 @@
+### Get all university
+GET {{BASE_URL}}/{{VERSION}}/university?rowsPerPage=10&page=1&country=australia
+x-api-key: {{API_KEY}}
+content-type: application/json
+
+### Get university by id
+GET {{BASE_URL}}/{{VERSION}}/university/011a0d1c-e02b-45b8-a42a-ea308b9aa3da
+x-api-key: {{API_KEY}}
+content-type: application/json
+
+###
