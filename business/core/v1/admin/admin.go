@@ -78,16 +78,16 @@ func Create(ctx context.Context, cfg *lambda.Config, r events.APIGatewayProxyReq
 	return newAdmin, nil
 }
 
-func Query(ctx context.Context, cfg *lambda.Config, page, rowsPerPage int) ([]admin.Admin, error) {
-	res, err := admin.Query(ctx, cfg.Db)
+func Find(ctx context.Context, cfg *lambda.Config, startKey string, limit int64) (lambda.FindResponse[admin.Admin], error) {
+	result, lastEK, err := admin.Find(ctx, cfg.Db, startKey, limit)
 	if err != nil {
-		return nil, fmt.Errorf("can't retrieve admin: %v", err)
+		return lambda.FindResponse[admin.Admin]{}, fmt.Errorf("can't retrieve admin: %v", err)
 	}
-	return res, nil
+	return lambda.FindResponse[admin.Admin]{LastEvaluatedKey: lastEK, Data: result}, nil
 }
 
-func QueryByID(ctx context.Context, cfg *lambda.Config, id string) (admin.Admin, error) {
-	res, err := admin.QueryByID(ctx, cfg.Db, id)
+func FindByID(ctx context.Context, cfg *lambda.Config, id string) (admin.Admin, error) {
+	res, err := admin.FindByID(ctx, cfg.Db, id)
 	if err != nil {
 		return admin.Admin{}, fmt.Errorf("can't retrieve admin: %v", err)
 	}
@@ -104,7 +104,7 @@ func Update(ctx context.Context, cfg *lambda.Config, id string, r events.APIGate
 		return admin.Admin{}, fmt.Errorf("invalid request: %v", err)
 	}
 
-	res, err := admin.QueryByID(ctx, cfg.Db, id)
+	res, err := admin.FindByID(ctx, cfg.Db, id)
 	if err != nil {
 		return admin.Admin{}, fmt.Errorf("can't retrieve admin: %v", err)
 	}
@@ -155,7 +155,7 @@ func Update(ctx context.Context, cfg *lambda.Config, id string, r events.APIGate
 }
 
 func Delete(ctx context.Context, cfg *lambda.Config, id string, now time.Time) (admin.Admin, error) {
-	res, err := admin.QueryByID(ctx, cfg.Db, id)
+	res, err := admin.FindByID(ctx, cfg.Db, id)
 	if err != nil {
 		return admin.Admin{}, fmt.Errorf("can't find admin: %v", err)
 	}
@@ -175,7 +175,7 @@ func Delete(ctx context.Context, cfg *lambda.Config, id string, now time.Time) (
 }
 
 func Login(ctx context.Context, cfg *lambda.Config, data admin.LoginAdminDTO) (Session, error) {
-	res, err := admin.QueryByEmail(ctx, cfg.Db, data.Email)
+	res, err := admin.FindOneByEmail(ctx, cfg.Db, data.Email)
 	if err != nil {
 		return Session{}, fmt.Errorf("can't find admin: %v", err)
 	}
@@ -197,7 +197,7 @@ func Login(ctx context.Context, cfg *lambda.Config, data admin.LoginAdminDTO) (S
 }
 
 func RefreshToken(ctx context.Context, cfg *lambda.Config, data admin.RefreshTokenDTO) (Session, error) {
-	res, err := admin.QueryByID(ctx, cfg.Db, data.ID)
+	res, err := admin.FindByID(ctx, cfg.Db, data.ID)
 	if err != nil {
 		return Session{}, fmt.Errorf("can't find admin: %v", err)
 	}

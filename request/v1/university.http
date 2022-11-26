@@ -1,5 +1,5 @@
 ### Get all university
-GET {{BASE_URL}}/{{VERSION}}/university?rowsPerPage=10&page=1&country=australia
+GET {{BASE_URL}}/{{VERSION}}/university?limit=10&country=canada
 x-api-key: {{API_KEY}}
 content-type: application/json
 

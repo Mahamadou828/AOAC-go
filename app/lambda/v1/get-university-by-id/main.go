@@ -26,7 +26,7 @@ func handler(ctx context.Context, r events.APIGatewayProxyRequest, cfg *lambda.C
 		return lambda.SendError(ctx, http.StatusBadRequest, fmt.Errorf("invalid id: %s", id))
 	}
 
-	u, err := core.QueryByID(ctx, cfg, id)
+	u, err := core.FindByID(ctx, cfg, id)
 	if err != nil {
 		return lambda.SendError(ctx, http.StatusBadRequest, fmt.Errorf("can't retrieve university: %v", err))
 	}

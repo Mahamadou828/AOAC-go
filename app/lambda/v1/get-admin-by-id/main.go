@@ -28,7 +28,7 @@ func handler(ctx context.Context, r events.APIGatewayProxyRequest, cfg *lambda.C
 	}
 
 	//fetch the admin by the provided id
-	admin, err := core.QueryByID(ctx, cfg, id)
+	admin, err := core.FindByID(ctx, cfg, id)
 	if err != nil {
 		return lambda.SendError(ctx, http.StatusBadRequest, fmt.Errorf("can't find admin: %v", err))
 	}

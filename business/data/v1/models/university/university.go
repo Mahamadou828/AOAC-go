@@ -8,39 +8,53 @@ import (
 )
 
 func Create(ctx context.Context, db *database.Database, nu University) error {
-	if err := database.PutOrCreateItem[University](ctx, db, "university", nu); err != nil {
+	if err := database.UpdateOrCreate[University](ctx, db, "university", nu); err != nil {
 		return fmt.Errorf("can't save university in database: %v", err)
 	}
 
 	return nil
 }
 
-func Query(ctx context.Context, db *database.Database) ([]University, error) {
+func Find(ctx context.Context, db *database.Database, startKey string, limit int64) ([]University, string, error) {
 	var us []University
 
-	if err := database.GetItems[[]University](ctx, db, "university", &us); err != nil {
-		return us, fmt.Errorf("can't get university: %v", err)
+	lastEk, err := database.Find[[]University](ctx, db, "university", startKey, limit, &us)
+
+	if err != nil {
+		return us, "", fmt.Errorf("can't get university: %v", err)
 	}
 
-	return us, nil
+	return us, lastEk, nil
 }
 
-func QueryByID(ctx context.Context, db *database.Database, id string) (University, error) {
+func FindByID(ctx context.Context, db *database.Database, id string) (University, error) {
 	var us University
 
-	if err := database.GetItemByUniqueKey[University](ctx, db, id, "id", "university", &us); err != nil {
+	if err := database.FindByID[University](ctx, db, id, "university", &us); err != nil {
 		return us, fmt.Errorf("can't get university: %v", err)
 	}
 
 	return us, nil
 }
 
-func QueryByCountry(ctx context.Context, db *database.Database, country string) ([]University, error) {
+func FindByCountry(ctx context.Context, db *database.Database, country, startEK string, limit int64) ([]University, string, error) {
 	var us []University
-
-	if err := database.GetItemsByIndex[[]University](ctx, db, country, "country", "countryIndex", "university", &us); err != nil {
-		return us, fmt.Errorf("can't get for country %s: %v", country, err)
+	fmt.Println(startEK)
+	inp := database.FindByIndexInput[University]{
+		KeyName:   "country",
+		KeyValue:  country,
+		Index:     "countryIndex",
+		TableName: "university",
+		Dest:      &us,
+		Limit:     limit,
+		StartEK:   startEK,
 	}
 
-	return us, nil
+	lastEK, err := database.FindByIndex[University](ctx, db, inp)
+
+	if err != nil {
+		return us, "", fmt.Errorf("can't get for country %s: %v", country, err)
+	}
+
+	return us, lastEK, nil
 }
