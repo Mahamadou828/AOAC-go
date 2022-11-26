@@ -166,6 +166,23 @@ func NewInfraStack(scope constructs.Construct, id string, props *InfraStackProps
 			Type: dynamodb.AttributeType_STRING,
 		},
 	})
+
+	//Create the university table
+	universityTab := dynamodb.NewTable(stack, jsii.String(fmt.Sprintf("university-%s", props.Env)), &dynamodb.TableProps{
+		TableName: jsii.String(fmt.Sprintf("%s-university", props.Env)),
+		PartitionKey: &dynamodb.Attribute{
+			Name: jsii.String("id"),
+			Type: dynamodb.AttributeType_STRING,
+		},
+	})
+	universityTab.AddGlobalSecondaryIndex(&dynamodb.GlobalSecondaryIndexProps{
+		IndexName: jsii.String("countryIndex"),
+		PartitionKey: &dynamodb.Attribute{
+			Name: jsii.String("country"),
+			Type: dynamodb.AttributeType_STRING,
+		},
+	})
+
 	return stack
 }
 

@@ -206,6 +206,48 @@ func GetItemByIndex[T any](ctx context.Context, client *Database, keyValue strin
 	return nil
 }
 
+// GetItemsByIndex return a list of item that match the given index, the index should be created on the table
+func GetItemsByIndex[S ~[]T, T any](ctx context.Context, client *Database, keyValue string, keyName string, index string, tableName string, dest *S) error {
+	input := &dynamodb.QueryInput{
+		TableName: formatTableName(client.env, tableName),
+		IndexName: sdkaws.String(index),
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			fmt.Sprintf(":%s", keyName): {
+				S: sdkaws.String(keyValue),
+			},
+		},
+		KeyConditionExpression: sdkaws.String(fmt.Sprintf("%s = :%s", keyName, keyName)),
+	}
+
+	result, err := client.svc.QueryWithContext(ctx, input)
+	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
+			case dynamodb.ErrCodeProvisionedThroughputExceededException:
+				return fmt.Errorf("%v: %v", dynamodb.ErrCodeProvisionedThroughputExceededException, aerr.Error())
+			case dynamodb.ErrCodeResourceNotFoundException:
+				return fmt.Errorf("%v: %v", dynamodb.ErrCodeResourceNotFoundException, aerr.Error())
+			case dynamodb.ErrCodeRequestLimitExceeded:
+				return fmt.Errorf("%v: %v", dynamodb.ErrCodeRequestLimitExceeded, aerr.Error())
+			case dynamodb.ErrCodeInternalServerError:
+				return fmt.Errorf("%v: %v", dynamodb.ErrCodeInternalServerError, aerr.Error())
+			default:
+				return fmt.Errorf(aerr.Error())
+			}
+		} else {
+			// Print the error, cast err to awserr.Error to get the Code and
+			// Message from an error.
+			return fmt.Errorf(err.Error())
+		}
+	}
+
+	if err := dynamodbattribute.UnmarshalListOfMaps(result.Items, &dest); err != nil {
+		return fmt.Errorf("can't unmarshal dynamodb attribute %v", err)
+	}
+
+	return nil
+}
+
 // PutOrCreateItem will create a new item if the provided item key does not exist. Otherwise, it will update the item.
 func PutOrCreateItem[T interface{}](ctx context.Context, client *Database, tableName string, data T) error {
 	item, err := dynamodbattribute.MarshalMap(data)

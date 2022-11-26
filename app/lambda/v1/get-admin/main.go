@@ -39,5 +39,5 @@ func handler(ctx context.Context, r events.APIGatewayProxyRequest, cfg *lambda.C
 	if err != nil {
 		return lambda.SendError(ctx, http.StatusBadRequest, fmt.Errorf("can't query admin: %v", err))
 	}
-	return lambda.Response(ctx, http.StatusOK, res)
+	return lambda.SendResponse(ctx, http.StatusOK, res)
 }

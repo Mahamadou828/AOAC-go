@@ -6,8 +6,8 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
-// Response send a response to the client in json
-func Response(ctx context.Context, status int, data any) (events.APIGatewayProxyResponse, error) {
+// SendResponse send a response to the client in json
+func SendResponse(ctx context.Context, status int, data any) (events.APIGatewayProxyResponse, error) {
 	b, err := json.Marshal(data)
 	if err != nil {
 		return events.APIGatewayProxyResponse{}, err

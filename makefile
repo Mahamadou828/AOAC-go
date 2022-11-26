@@ -37,3 +37,6 @@ test:
 deploy: deploy-cdk-stack
 
 destroy: destroy-cdk-stack
+
+scrap:
+	go run app/scraper/main.go

@@ -21,7 +21,7 @@ func handler(ctx context.Context, r events.APIGatewayProxyRequest, cfg *lambda.C
 	//Get request trace
 	v, err := lambda.GetRequestTrace(ctx)
 	if err != nil {
-		return lambda.Response(ctx, http.StatusInternalServerError, fmt.Errorf("unable to get request trace: %v", err))
+		return lambda.SendResponse(ctx, http.StatusInternalServerError, fmt.Errorf("unable to get request trace: %v", err))
 	}
 
 	//get admin id
@@ -39,5 +39,5 @@ func handler(ctx context.Context, r events.APIGatewayProxyRequest, cfg *lambda.C
 		return lambda.SendError(ctx, http.StatusBadRequest, fmt.Errorf("can't create new admin: %v", err))
 
 	}
-	return lambda.Response(ctx, http.StatusOK, newAdmin)
+	return lambda.SendResponse(ctx, http.StatusOK, newAdmin)
 }

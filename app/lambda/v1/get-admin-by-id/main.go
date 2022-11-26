@@ -33,5 +33,5 @@ func handler(ctx context.Context, r events.APIGatewayProxyRequest, cfg *lambda.C
 		return lambda.SendError(ctx, http.StatusBadRequest, fmt.Errorf("can't find admin: %v", err))
 	}
 
-	return lambda.Response(ctx, http.StatusOK, admin)
+	return lambda.SendResponse(ctx, http.StatusOK, admin)
 }
