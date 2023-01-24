@@ -18,28 +18,26 @@ func main() {
 }
 
 func handler(ctx context.Context, r events.APIGatewayProxyRequest, cfg *lambda.Config) (events.APIGatewayProxyResponse, error) {
-	//Extract rows per page and page then validate them
-	rowsPerPageStr, ok := r.QueryStringParameters["rowsPerPage"]
+	//Get parameters limit
+	limitStr, ok := r.QueryStringParameters["limit"]
 	if !ok {
-		return lambda.SendError(ctx, http.StatusBadRequest, fmt.Errorf("missing required query string parameter rowsPerPage"))
+		return lambda.SendError(ctx, http.StatusBadRequest, fmt.Errorf("missing required query string parameter limit"))
 	}
-	pageStr, ok := r.QueryStringParameters["page"]
-	if !ok {
-		return lambda.SendError(ctx, http.StatusBadRequest, fmt.Errorf("missing required query string parameter page"))
-	}
-	rowsPerPage, err := strconv.Atoi(rowsPerPageStr)
+
+	//Parse limit into a int64
+	limit, err := strconv.ParseInt(limitStr, 10, 64)
 	if err != nil {
-		return lambda.SendError(ctx, http.StatusBadRequest, fmt.Errorf("invalid number of rows per page"))
+		return lambda.SendError(ctx, http.StatusBadRequest, fmt.Errorf("invalid parameter limit: %v", err))
 	}
-	page, err := strconv.Atoi(pageStr)
-	if err != nil {
-		return lambda.SendError(ctx, http.StatusBadRequest, fmt.Errorf("invalid number of page"))
-	}
+
+	//Extract optional parameters last evaluated key
+	lastEvaluatedKey := r.QueryStringParameters["lastEvaluatedKey"]
 
 	//Extract optional parameters country
 	country := r.QueryStringParameters["country"]
 
-	us, err := core.Query(ctx, cfg, page, rowsPerPage, country)
+	//find all university
+	us, err := core.Find(ctx, cfg, country, lastEvaluatedKey, limit)
 	if err != nil {
 		return lambda.SendError(ctx, http.StatusBadRequest, fmt.Errorf("can't retrieve university: %v", err))
 	}

@@ -6,6 +6,11 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
+type FindResponse[T any] struct {
+	LastEvaluatedKey string `json:"lastEvaluatedKey"`
+	Data             []T    `json:"data"`
+}
+
 // SendResponse send a response to the client in json
 func SendResponse(ctx context.Context, status int, data any) (events.APIGatewayProxyResponse, error) {
 	b, err := json.Marshal(data)
