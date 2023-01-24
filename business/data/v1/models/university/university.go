@@ -39,7 +39,6 @@ func FindByID(ctx context.Context, db *database.Database, id string) (University
 
 func FindByCountry(ctx context.Context, db *database.Database, country, startEK string, limit int64) ([]University, string, error) {
 	var us []University
-	fmt.Println(startEK)
 	inp := database.FindByIndexInput[University]{
 		KeyName:   "country",
 		KeyValue:  country,

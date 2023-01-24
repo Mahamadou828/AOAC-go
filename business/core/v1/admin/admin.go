@@ -78,12 +78,20 @@ func Create(ctx context.Context, cfg *lambda.Config, r events.APIGatewayProxyReq
 	return newAdmin, nil
 }
 
-func Find(ctx context.Context, cfg *lambda.Config, startKey string, limit int64) (lambda.FindResponse[admin.Admin], error) {
-	result, lastEK, err := admin.Find(ctx, cfg.Db, startKey, limit)
-	if err != nil {
-		return lambda.FindResponse[admin.Admin]{}, fmt.Errorf("can't retrieve admin: %v", err)
+func Find(ctx context.Context, cfg *lambda.Config, email, startKey string, limit int64) (lambda.FindResponse[admin.Admin], error) {
+
+	switch true {
+	case len(email) > 0:
+		result, lastEk, err := admin.FindByEmail(ctx, cfg.Db, email, startKey, limit)
+		return lambda.FindResponse[admin.Admin]{LastEvaluatedKey: lastEk, Data: result}, err
+	default:
+		result, lastEK, err := admin.Find(ctx, cfg.Db, startKey, limit)
+		if err != nil {
+			return lambda.FindResponse[admin.Admin]{}, fmt.Errorf("can't retrieve admin: %v", err)
+		}
+		return lambda.FindResponse[admin.Admin]{LastEvaluatedKey: lastEK, Data: result}, nil
 	}
-	return lambda.FindResponse[admin.Admin]{LastEvaluatedKey: lastEK, Data: result}, nil
+
 }
 
 func FindByID(ctx context.Context, cfg *lambda.Config, id string) (admin.Admin, error) {

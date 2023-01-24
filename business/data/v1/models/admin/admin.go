@@ -15,14 +15,33 @@ func Create(ctx context.Context, db *database.Database, na Admin) error {
 	return nil
 }
 
-// Find fetch all admin, no pagination for now
-// @todo add pagination
+// Find fetch all admin, send the start key to have the pagination added
 func Find(ctx context.Context, db *database.Database, startKey string, limit int64) ([]Admin, string, error) {
 	var as []Admin
 	lastEK, err := database.Find[[]Admin](ctx, db, "admin", startKey, limit, &as)
 
 	if err != nil {
 		return as, "", fmt.Errorf("can't get admin: %v", err)
+	}
+	return as, lastEK, nil
+}
+
+// FindByEmail fetch all admin that match the given email
+func FindByEmail(ctx context.Context, db *database.Database, email, startKey string, limit int64) ([]Admin, string, error) {
+	var as []Admin
+
+	lastEK, err := database.FindByIndex(ctx, db, database.FindByIndexInput[Admin]{
+		KeyName:   "email",
+		KeyValue:  email,
+		Index:     "emailIndex",
+		TableName: "admin",
+		Dest:      &as,
+		Limit:     limit,
+		StartEK:   startKey,
+	})
+
+	if err != nil {
+		return as, "", fmt.Errorf("can't get admin with the given email: %v, %v", email, err)
 	}
 	return as, lastEK, nil
 }

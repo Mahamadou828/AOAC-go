@@ -258,7 +258,10 @@ func FindByIndex[T any](ctx context.Context, client *Database, inp FindByIndexIn
 	if len(inp.StartEK) > 0 {
 		input.SetExclusiveStartKey(map[string]*dynamodb.AttributeValue{
 			"id": {
-				S: sdkaws.String("1c66a96d-0c43-4098-b3fa-4bbe83d5bcd8"),
+				S: sdkaws.String(inp.StartEK),
+			},
+			inp.KeyName: {
+				S: sdkaws.String(inp.KeyValue),
 			},
 		})
 	}
@@ -290,7 +293,6 @@ func FindByIndex[T any](ctx context.Context, client *Database, inp FindByIndexIn
 	}
 
 	if _, ok := result.LastEvaluatedKey["id"]; ok {
-		fmt.Println(*result.LastEvaluatedKey["id"].S)
 		lastEK = *result.LastEvaluatedKey["id"].S
 	}
 
