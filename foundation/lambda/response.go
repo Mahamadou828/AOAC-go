@@ -54,8 +54,11 @@ func SendError(ctx context.Context, status int, err error) (events.APIGatewayPro
 	return events.APIGatewayProxyResponse{
 		StatusCode: status,
 		Headers: map[string]string{
-			"Content-Type": "application/json",
-			"TraceID":      GetTraceID(ctx),
+			"Content-Type":                 "application/json",
+			"TraceID":                      GetTraceID(ctx),
+			"Access-Control-Allow-Headers": "*",
+			"Access-Control-Allow-Methods": "GET,POST,OPTIONS,PUT,PATCH,DELETE",
+			"Access-Control-Allow-Origin":  "*",
 		},
 		Body: string(b),
 	}, nil
