@@ -60,34 +60,36 @@ func Create(ctx context.Context, cfg *lambda.Config, r events.APIGatewayProxyReq
 	//upload all documents and format them to the document struct
 	noteCertif := model.Document{
 		ID:        validate.GenerateID(),
-		S3URL:     "note_certificate" + validate.GenerateID(),
 		Name:      "note certificate of" + nu.Name,
 		UserID:    id,
 		CreatedAt: now,
 		DeleteAt:  time.Time{},
 		UpdatedAt: now,
 	}
-	BaccCertif := model.Document{
+	baccCertif := model.Document{
 		ID:        validate.GenerateID(),
-		S3URL:     "baccalaureate_certificate" + validate.GenerateID(),
 		Name:      "note certificate of" + nu.Name,
 		UserID:    id,
 		CreatedAt: now,
 		DeleteAt:  time.Time{},
 		UpdatedAt: now,
 	}
-	if _, err := cfg.AWSClient.S3.UploadToBucket(
+	var err error
+
+	fmt.Println(nu.NoteCertificate)
+
+	if noteCertif.S3URL, err = cfg.AWSClient.S3.UploadToBucket(
 		strings.NewReader(nu.NoteCertificate),
-		cfg.AWSClient.S3.S3UserProfilePictureBucket,
-		noteCertif.S3URL,
+		cfg.AWSClient.S3.S3UserDocumentBucket,
+		validate.GenerateID(),
 		"application/pdf"); err != nil {
 		return model.User{}, fmt.Errorf("can't upload the note certificate: %v", err)
 	}
 
-	if _, err := cfg.AWSClient.S3.UploadToBucket(
+	if baccCertif.S3URL, err = cfg.AWSClient.S3.UploadToBucket(
 		strings.NewReader(nu.BaccalaureateCertificate),
-		cfg.AWSClient.S3.S3UserProfilePictureBucket,
-		BaccCertif.S3URL,
+		cfg.AWSClient.S3.S3UserDocumentBucket,
+		validate.GenerateID(),
 		"application/pdf"); err != nil {
 		return model.User{}, fmt.Errorf("can't upload the baccalaureate certificate: %v", err)
 	}
@@ -128,7 +130,7 @@ func Create(ctx context.Context, cfg *lambda.Config, r events.APIGatewayProxyReq
 		return model.User{}, fmt.Errorf("failed to save user %v", err)
 	}
 
-	if err := model.CreateDocs(ctx, cfg.Db, []model.Document{noteCertif, BaccCertif}); err != nil {
+	if err := model.CreateDocs(ctx, cfg.Db, []model.Document{noteCertif, baccCertif}); err != nil {
 		return model.User{}, fmt.Errorf("can't save documents: %v", err)
 	}
 

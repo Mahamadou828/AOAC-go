@@ -364,7 +364,7 @@ func BatchWrite[T any](ctx context.Context, client *Database, tableName string, 
 	}
 
 	//@todo implement loop until all items has been saved.
-	_, err := client.svc.BatchWriteItem(input)
+	_, err := client.svc.BatchWriteItemWithContext(ctx, input)
 
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok {

@@ -29,7 +29,7 @@ func NewS3(sess *session.Session, env string) *S3 {
 		svc:                         s3.New(sess),
 		S3AdminProfilePictureBucket: fmt.Sprintf("%s-admin-profile-pick", env),
 		S3UserProfilePictureBucket:  fmt.Sprintf("%s-user-profile-pick", env),
-		S3UserDocumentBucket:        fmt.Sprintf("%s-user-docs", env),
+		S3UserDocumentBucket:        fmt.Sprintf("%s-user-docs-aoac", env),
 	}
 }
 
@@ -40,8 +40,6 @@ func (s *S3) UploadToBucket(content io.Reader, bucket, key, contentType string) 
 		ContentType: aws.String(contentType),
 		Key:         aws.String(key),
 	})
-
-	fmt.Println(res.Location)
 
 	if err != nil {
 		return "", fmt.Errorf("error uploading file: %v", err)

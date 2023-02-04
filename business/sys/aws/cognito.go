@@ -148,12 +148,9 @@ func (c *Cognito) RefreshToken(token string) (Session, error) {
 
 	out, err := c.identityProvider.InitiateAuth(&inp)
 
-	fmt.Println(*out.AuthenticationResult)
-
 	if err != nil {
 		return Session{}, err
 	}
-	//fmt.Println(*out.AuthenticationResult)
 	return Session{
 		Token:        *out.AuthenticationResult.AccessToken,
 		ExpireIn:     *out.AuthenticationResult.ExpiresIn,
