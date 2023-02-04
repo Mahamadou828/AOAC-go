@@ -89,6 +89,26 @@ Resources:
         # Give the Lambda service access to poll your DynamoDB Stream
         - AmazonDynamoDBFullAccess
 
+  CreateUserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../../app/lambda/v1/create-user/
+      Handler: create-user
+      Environment:
+        Variables:
+          SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
+          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
+          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /v1/user
+            Method: Post
+      Policies:
+        # Give the Lambda service access to poll your DynamoDB Stream
+        - AmazonDynamoDBFullAccess
+
   GetAdminFunction:
     Type: AWS::Serverless::Function
     Properties:

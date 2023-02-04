@@ -305,7 +305,6 @@ func UpdateOrCreate[T interface{}](ctx context.Context, client *Database, tableN
 	if err != nil {
 		return fmt.Errorf("can't marshal data: %v into dynamodb attribute", err)
 	}
-
 	input := &dynamodb.PutItemInput{
 		Item:      item,
 		TableName: formatTableName(client.env, tableName),
@@ -338,6 +337,54 @@ func UpdateOrCreate[T interface{}](ctx context.Context, client *Database, tableN
 			return fmt.Errorf(err.Error())
 		}
 	}
+	return nil
+}
+
+// BatchWrite allow to save multiple item in one request. The number of items should not be more than 25 and
+// each item should not be more than 400kb. For more details see:
+// https://pkg.go.dev/github.com/aws/aws-sdk-go/service/dynamodb@v1.44.108#DynamoDB.BatchWriteItemWithContext
+func BatchWrite[T any](ctx context.Context, client *Database, tableName string, items []T) error {
+	var body []*dynamodb.WriteRequest
+
+	for _, item := range items {
+		marshalInput, _ := dynamodbattribute.MarshalMap(item)
+		rq := &dynamodb.WriteRequest{
+			PutRequest: &dynamodb.PutRequest{
+				Item: marshalInput,
+			},
+		}
+
+		body = append(body, rq)
+	}
+
+	input := &dynamodb.BatchWriteItemInput{
+		RequestItems: map[string][]*dynamodb.WriteRequest{
+			*formatTableName(client.env, tableName): body,
+		},
+	}
+
+	//@todo implement loop until all items has been saved.
+	_, err := client.svc.BatchWriteItemWithContext(ctx, input)
+
+	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
+			case dynamodb.ErrCodeProvisionedThroughputExceededException:
+				return fmt.Errorf("can't save items: %v, %v", dynamodb.ErrCodeProvisionedThroughputExceededException, aerr.Error())
+			case dynamodb.ErrCodeResourceNotFoundException:
+				return fmt.Errorf("can't save items: %v, %v", dynamodb.ErrCodeResourceNotFoundException, aerr.Error())
+			case dynamodb.ErrCodeItemCollectionSizeLimitExceededException:
+				return fmt.Errorf("can't save items: %v, %v", dynamodb.ErrCodeItemCollectionSizeLimitExceededException, aerr.Error())
+			case dynamodb.ErrCodeRequestLimitExceeded:
+				return fmt.Errorf("can't save items: %v, %v", dynamodb.ErrCodeRequestLimitExceeded, aerr.Error())
+			case dynamodb.ErrCodeInternalServerError:
+				return fmt.Errorf("can't save items: %v, %v", dynamodb.ErrCodeInternalServerError, aerr.Error())
+			default:
+				return fmt.Errorf("can't save items: %v", aerr.Error())
+			}
+		}
+	}
+
 	return nil
 }
 

@@ -6,6 +6,7 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"io"
 	"reflect"
+	"strings"
 )
 
 // ParseForm parse all field of a form data
@@ -39,7 +40,16 @@ func ParseForm(form any, r events.APIGatewayProxyRequest) error {
 		if err != nil {
 			return fmt.Errorf("can't read part %s: %v", part.FormName(), err)
 		}
-		mapFormValue[part.FormName()] = string(content)
+		if strings.Contains(part.FormName(), "[]") {
+			name, _, _ := strings.Cut(part.FormName(), "[]")
+			if _, ok := mapFormValue[name]; !ok {
+				mapFormValue[name] = string(content)
+			} else {
+				mapFormValue[name] += ";" + string(content)
+			}
+		} else {
+			mapFormValue[part.FormName()] = string(content)
+		}
 	}
 
 	for _, f := range fs {
