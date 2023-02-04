@@ -76,8 +76,6 @@ func Create(ctx context.Context, cfg *lambda.Config, r events.APIGatewayProxyReq
 	}
 	var err error
 
-	fmt.Println(nu.NoteCertificate)
-
 	if noteCertif.S3URL, err = cfg.AWSClient.S3.UploadToBucket(
 		strings.NewReader(nu.NoteCertificate),
 		cfg.AWSClient.S3.S3UserDocumentBucket,

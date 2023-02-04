@@ -59,7 +59,6 @@ func ParseForm(form any, r events.APIGatewayProxyRequest) error {
 
 		value, ok := mapFormValue[f.Name]
 		if !ok {
-			fmt.Println(f.Name, value)
 			continue
 		}
 
