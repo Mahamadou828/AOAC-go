@@ -35,6 +35,11 @@ Globals:
       - 'application/octet-stream'
       - 'application/json'
       - 'application~json'
+    Cors:
+      AllowMethods: "'GET,POST,OPTIONS,PUT,PATCH,DELETE'"
+      AllowHeaders: "'*'"
+      AllowOrigin: "'*'"
+      AllowCredentials: "'*'"
   Function:
     MemorySize: 8192
     Runtime: go1.x

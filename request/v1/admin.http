@@ -40,7 +40,7 @@ Content-Disposition: form-data; name="password"
 --WebAppBoundary--
 
 ### Get All Admin
-GET {{BASE_URL}}/{{VERSION}}/admin?limit=3&email=opmadou@gmail.com
+GET {{BASE_URL}}/{{VERSION}}/admin?page=1&rowsPerPage=5
 x-api-key: {{API_KEY}}
 content-type: application/json
 
