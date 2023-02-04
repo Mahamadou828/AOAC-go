@@ -17,6 +17,8 @@ type S3 struct {
 	downloader                  *s3manager.Downloader
 	svc                         *s3.S3
 	S3AdminProfilePictureBucket string
+	S3UserProfilePictureBucket  string
+	S3UserDocumentBucket        string
 }
 
 func NewS3(sess *session.Session, env string) *S3 {
@@ -26,6 +28,8 @@ func NewS3(sess *session.Session, env string) *S3 {
 		downloader:                  s3manager.NewDownloader(sess),
 		svc:                         s3.New(sess),
 		S3AdminProfilePictureBucket: fmt.Sprintf("%s-admin-profile-pick", env),
+		S3UserProfilePictureBucket:  fmt.Sprintf("%s-user-profile-pick", env),
+		S3UserDocumentBucket:        fmt.Sprintf("%s-user-docs", env),
 	}
 }
 
