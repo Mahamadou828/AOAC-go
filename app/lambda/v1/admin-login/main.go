@@ -35,5 +35,5 @@ func handler(ctx context.Context, r events.APIGatewayProxyRequest, cfg *lambda.C
 
 	}
 
-	return lambda.Response(ctx, http.StatusOK, session)
+	return lambda.SendResponse(ctx, http.StatusOK, session)
 }

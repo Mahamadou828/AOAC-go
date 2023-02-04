@@ -11,7 +11,8 @@ import (
 )
 
 var (
-	ErrSSMNoSecretForService = errors.New("no secret for the given service was initiated")
+	ErrSSMNoSecretForService      = errors.New("no secret for the given service was initiated")
+	ErrSSMSecretPoolAlreadyExists = errors.New("a secret for the given service already exists")
 )
 
 // SSM provide an api to communicate with the aws simple secrets service
@@ -19,6 +20,11 @@ type SSM struct {
 	service string
 	env     string
 	svc     *secretsmanager.SecretsManager
+}
+
+type Secret struct {
+	Name  string
+	Value string
 }
 
 func NewSSM(service, env string, sess *session.Session) *SSM {
@@ -29,6 +35,8 @@ func NewSSM(service, env string, sess *session.Session) *SSM {
 	}
 }
 
+// GetSecret Retrieve all secrets store in the aws account
+// and filter them based on the service pass and the build.
 func (s *SSM) GetSecret() (map[string]string, error) {
 	var secrets map[string]string
 
@@ -127,7 +135,7 @@ func (s *SSM) CreatePool() error {
 			case secretsmanager.ErrCodeEncryptionFailure:
 				return fmt.Errorf("error creating secret: %s, %s", secretsmanager.ErrCodeEncryptionFailure, aerr.Error())
 			case secretsmanager.ErrCodeResourceExistsException:
-				return fmt.Errorf("error creating secret: %s, %s", secretsmanager.ErrCodeResourceExistsException, aerr.Error())
+				return ErrSSMSecretPoolAlreadyExists
 			case secretsmanager.ErrCodeResourceNotFoundException:
 				return fmt.Errorf("error creating secret: %s, %s", secretsmanager.ErrCodeResourceNotFoundException, aerr.Error())
 			case secretsmanager.ErrCodeMalformedPolicyDocumentException:
@@ -202,4 +210,61 @@ func (s *SSM) CreateSecret(name, value string) error {
 	}
 
 	return nil
+}
+
+// CreateSecrets insert new secret in the secret pool. If the given secret already exists
+// its value will be updated.
+func (s *SSM) CreateSecrets(sts []Secret) error {
+	secrets, err := s.GetSecret()
+	if err != nil {
+		return err
+	}
+	for _, st := range sts {
+		name, value := st.Name, st.Value
+		//placing the secret inside the map
+		//if the secret is already created, this will overwrite it's value
+		secrets[name] = value
+	}
+
+	b, err := json.Marshal(secrets)
+	if err != nil {
+		return fmt.Errorf("failed to marshal the secret: %v", err)
+	}
+
+	input := &secretsmanager.UpdateSecretInput{
+		SecretId:     aws.String(fmt.Sprintf("%s/%s", s.service, s.env)),
+		SecretString: aws.String(string(b)),
+	}
+
+	_, err = s.svc.UpdateSecret(input)
+	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
+			case secretsmanager.ErrCodeInvalidParameterException:
+				return errors.New(secretsmanager.ErrCodeInvalidParameterException)
+			case secretsmanager.ErrCodeInvalidRequestException:
+				return errors.New(secretsmanager.ErrCodeInvalidRequestException)
+			case secretsmanager.ErrCodeLimitExceededException:
+				return errors.New(secretsmanager.ErrCodeLimitExceededException)
+			case secretsmanager.ErrCodeEncryptionFailure:
+				return errors.New(secretsmanager.ErrCodeEncryptionFailure)
+			case secretsmanager.ErrCodeResourceExistsException:
+				return errors.New(secretsmanager.ErrCodeResourceExistsException)
+			case secretsmanager.ErrCodeResourceNotFoundException:
+				return errors.New(secretsmanager.ErrCodeResourceNotFoundException)
+			case secretsmanager.ErrCodeMalformedPolicyDocumentException:
+				return errors.New(secretsmanager.ErrCodeMalformedPolicyDocumentException)
+			case secretsmanager.ErrCodeInternalServiceError:
+				return errors.New(secretsmanager.ErrCodeInternalServiceError)
+			case secretsmanager.ErrCodePreconditionNotMetException:
+				return errors.New(secretsmanager.ErrCodePreconditionNotMetException)
+			case secretsmanager.ErrCodeDecryptionFailure:
+				return errors.New(secretsmanager.ErrCodeDecryptionFailure)
+			default:
+				return errors.New(aerr.Error())
+			}
+		}
+	}
+	return nil
+
 }

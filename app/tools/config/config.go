@@ -57,12 +57,79 @@ type Tag struct {
 	name  string
 }
 
-//Parsers defines an interface for custom parsing functions
-type Parsers interface {
-	Parse(field Field) error
+type CustomParser func(field Field, defaultValue string) error
+
+func Parse(cfg interface{}, prefix string, parser CustomParser) (string, error) {
+	v := reflect.ValueOf(cfg)
+	if v.Kind() != reflect.Ptr {
+		return "", ErrInvalidStruct
+	}
+
+	osArgs := make(map[string]string)
+	if err := ParseOsArgs(osArgs); err != nil {
+		if errors.Is(err, ErrHelpWanted) {
+			help, err := UsageInfo(prefix, cfg)
+
+			if err != nil {
+				return "", fmt.Errorf("can't compose help message: %v", err)
+			}
+
+			return help, ErrHelpWanted
+		}
+		return "", err
+	}
+
+	envArgs := make(map[string]string)
+	if err := ParseEnvArgs(envArgs, prefix); err != nil {
+		return "", err
+	}
+
+	fields, err := extractFields(nil, cfg)
+
+	if err != nil {
+		return "", err
+	}
+
+	for _, field := range fields {
+		if !field.Field.IsValid() || !field.Field.CanSet() {
+			return "", fmt.Errorf("can't set the value of field %s", field.Field.String())
+		}
+
+		//The value of the field is equal by default to the tag value
+		value := field.Options.DefaultVal
+		//the env value overrides the default tag value
+		envVal, ok := envArgs[field.Name]
+
+		if ok {
+			value = envVal
+		}
+		//the os value overrides the default and the env value
+		osVal, ok := osArgs[field.Name]
+		if ok {
+			value = osVal
+		}
+
+		//if a parser was provided, we will call him and continue to the next field
+		if parser != nil {
+			if err := parser(field, value); err != nil {
+				return "", fmt.Errorf("custom parser error: %v", err)
+			}
+			continue
+		}
+
+		if value == "" && field.Options.Required {
+			return "", fmt.Errorf("invalue value for field %s, field mark as required but value=%q", field.Name, value)
+		}
+
+		if err := SetFieldValue(field, value); err != nil {
+			return "", err
+		}
+	}
+
+	return "", nil
 }
 
-//ParseOsArgs parses given command line arguments
+// ParseOsArgs parses given command line arguments
 func ParseOsArgs(flags map[string]string) error {
 	args := os.Args[1:]
 
@@ -114,7 +181,7 @@ func ParseOsArgs(flags map[string]string) error {
 	return nil
 }
 
-//ParseEnvArgs parse environment variables
+// ParseEnvArgs parse environment variables
 func ParseEnvArgs(flags map[string]string, prefix string) error {
 	uspace := fmt.Sprintf("$%s_", strings.ToUpper(prefix))
 	env := os.Environ()
@@ -145,7 +212,7 @@ func ParseEnvArgs(flags map[string]string, prefix string) error {
 	return nil
 }
 
-//UsageInfo provides output for usage information on the command line.
+// UsageInfo provides output for usage information on the command line.
 func UsageInfo(prefix string, cfg interface{}) (string, error) {
 	var sb strings.Builder
 
@@ -225,9 +292,9 @@ func UsageInfo(prefix string, cfg interface{}) (string, error) {
 	return sb.String(), nil
 }
 
-//SetFieldValue sets the value of a struct field.
-//The value can only be a string the function manage
-//the conversion to the appropriate type.
+// SetFieldValue sets the value of a struct field.
+// The value can only be a string the function manage
+// the conversion to the appropriate type.
 func SetFieldValue(field Field, value string) error {
 	switch field.Field.Kind() {
 	case reflect.String:
@@ -283,7 +350,7 @@ func SetFieldValue(field Field, value string) error {
 	return nil
 }
 
-//extractFields use reflection to parse the given struct and extract all fields
+// extractFields use reflection to parse the given struct and extract all fields
 func extractFields(prefix []string, target interface{}) ([]Field, error) {
 
 	s := reflect.ValueOf(target)

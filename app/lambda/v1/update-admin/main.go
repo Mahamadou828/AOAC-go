@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	core "github.com/Mahamadou828/AOAC/business/core/v1/admin"
-	"github.com/Mahamadou828/AOAC/business/data/v1/models/admin"
 	"github.com/Mahamadou828/AOAC/business/web/v1"
 	"github.com/Mahamadou828/AOAC/foundation/lambda"
 	"github.com/aws/aws-lambda-go/events"
@@ -22,16 +21,7 @@ func handler(ctx context.Context, r events.APIGatewayProxyRequest, cfg *lambda.C
 	//Get request trace
 	v, err := lambda.GetRequestTrace(ctx)
 	if err != nil {
-		return lambda.Response(ctx, http.StatusInternalServerError, fmt.Errorf("unable to get request trace: %v", err))
-	}
-
-	//Unmarshal body request and verify it
-	var data admin.UpdateAdminDTO
-	if err := lambda.DecodeBody(r.Body, &data); err != nil {
-		return lambda.SendError(ctx, http.StatusBadRequest, fmt.Errorf("unable to unmarshal body: %v", err))
-	}
-	if err := validate.Check(data); err != nil {
-		return lambda.SendError(ctx, http.StatusBadRequest, fmt.Errorf("invalid body: %v", err))
+		return lambda.SendResponse(ctx, http.StatusInternalServerError, fmt.Errorf("unable to get request trace: %v", err))
 	}
 
 	//get admin id
@@ -45,10 +35,10 @@ func handler(ctx context.Context, r events.APIGatewayProxyRequest, cfg *lambda.C
 	}
 
 	//Update admin
-	newAdmin, err := core.Update(ctx, cfg, id, data, v.Now)
+	newAdmin, err := core.Update(ctx, cfg, id, r, v.Now)
 	if err != nil {
 		return lambda.SendError(ctx, http.StatusBadRequest, fmt.Errorf("can't update admin: %v", err))
 
 	}
-	return lambda.Response(ctx, http.StatusOK, newAdmin)
+	return lambda.SendResponse(ctx, http.StatusOK, newAdmin)
 }

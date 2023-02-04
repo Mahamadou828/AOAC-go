@@ -25,8 +25,23 @@ Parameters:
 
 
 Globals:
+  Api:
+    BinaryMediaTypes:
+      - '*~1*'
+      - '*/*'
+      - 'multipart~1form-data'
+      - 'multipart/form-data'
+      - 'application~1octet-stream'
+      - 'application/octet-stream'
+      - 'application/json'
+      - 'application~json'
+    Cors:
+      AllowMethods: "'GET,POST,OPTIONS,PUT,PATCH,DELETE'"
+      AllowHeaders: "'*'"
+      AllowOrigin: "'*'"
+      AllowCredentials: "'*'"
   Function:
-    MemorySize: 2048
+    MemorySize: 8192
     Runtime: go1.x
     Timeout: 15
     Architectures:
@@ -69,6 +84,26 @@ Resources:
           Type: Api
           Properties:
             Path: /v1/admin
+            Method: Post
+      Policies:
+        # Give the Lambda service access to poll your DynamoDB Stream
+        - AmazonDynamoDBFullAccess
+
+  CreateUserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../../app/lambda/v1/create-user/
+      Handler: create-user
+      Environment:
+        Variables:
+          SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
+          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
+          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /v1/user
             Method: Post
       Policies:
         # Give the Lambda service access to poll your DynamoDB Stream
@@ -190,6 +225,37 @@ Resources:
           Properties:
             Path: /v1/admin/login/refresh
             Method: Post
-    Policies:
-      # Give the Lambda service access to poll your DynamoDB Stream
-      - AmazonDynamoDBFullAccess
+
+  GetUniversityFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../../app/lambda/v1/get-university/
+      Handler: get-university
+      Environment:
+        Variables:
+          SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
+          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
+          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /v1/university
+            Method: Get
+
+  GetUniversityByIDFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../../app/lambda/v1/get-university-by-id/
+      Handler: get-university-by-id
+      Environment:
+        Variables:
+          SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
+          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
+          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /v1/university/{id}
+            Method: Get

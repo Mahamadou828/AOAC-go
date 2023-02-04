@@ -35,16 +35,15 @@ type NewAdminDTO struct {
 
 // UpdateAdminDTO defines what information may be provided to modify an existing
 // Admin. All fields are optional so clients can send just the fields they want
-// changed. It uses pointer fields so we can differentiate between a field that
-// was not provided and a field that was provided as explicitly blank. Normally
-// we do not want to use pointers to basic types but we make exceptions around
-// marshalling/unmarshalling.
+// changed. Since the request have to support file upload we will not use pointer semantics field.
+// Instance we will check each field against they zero value.
 type UpdateAdminDTO struct {
-	Name        *string `json:"name"`
-	Surname     *string `json:"surname"`
-	Email       *string `json:"email" validate:"omitempty,email"`
-	PhoneNumber *string `json:"phoneNumber"`
-	Role        *string `json:"role"`
+	Name        string `json:"name"`
+	Surname     string `json:"surname"`
+	Email       string `json:"email" validate:"omitempty,email"`
+	PhoneNumber string `json:"phoneNumber"`
+	Role        string `json:"role"`
+	ProfilePick string `json:"profilePick"`
 }
 
 // LoginAdminDTO defines all data needed to log an admin

@@ -1,0 +1,91 @@
+### Create User
+POST {{BASE_URL}}/{{VERSION}}/user
+x-api-key: {{API_KEY}}
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="profilepick"; filename="profilePick.jpg"
+
+< ../../local/tree-736885__480.jpg
+
+--WebAppBoundary
+Content-Disposition: form-data; name="notecertificate"; filename="noteCertificate.pdf"
+
+< ../../local/73cee722-cf63-4b0f-9941-1e231dac6ba0.pdf
+
+--WebAppBoundary
+Content-Disposition: form-data; name="baccalaureatecertificate"; filename="baccalaureateCertificate.pdf"
+
+< ../../local/73cee722-cf63-4b0f-9941-1e231dac6ba0.pdf
+
+
+--WebAppBoundary
+Content-Disposition: form-data; name="name"
+
+Mahamadou Samake
+
+--WebAppBoundary
+Content-Disposition: form-data; name="email"
+
+enrolleduser@gmail.com
+
+--WebAppBoundary
+Content-Disposition: form-data; name="phonenumber"
+
++337859673
+
+--WebAppBoundary
+Content-Disposition: form-data; name="town"
+
+Bamako
+
+--WebAppBoundary
+Content-Disposition: form-data; name="country"
+
+Mali
+
+--WebAppBoundary
+Content-Disposition: form-data; name="birthday"
+
+1993-10-21T21:00:00
+
+--WebAppBoundary
+Content-Disposition: form-data; name="university"
+
+Castor
+
+--WebAppBoundary
+Content-Disposition: form-data; name="graduationdate"
+
+2011-10-21T21:00:00
+
+--WebAppBoundary
+Content-Disposition: form-data; name="section"
+
+computer science
+
+--WebAppBoundary
+Content-Disposition: form-data; name="selecteduniversities[]"
+
+b8ceb4f2-f2d6-4f1d-884f-bddd0dd262e1
+
+--WebAppBoundary
+Content-Disposition: form-data; name="selecteduniversities[]"
+
+5a93079e-e466-48b6-ba5d-8ecb39be049e
+
+--WebAppBoundary
+Content-Disposition: form-data; name="selecteduniversities[]"
+
+1ff67c61-144c-4f31-8291-eb7be81d6690
+
+--WebAppBoundary
+Content-Disposition: form-data; name="enrolledby"
+
+cd7176e5-02ed-4bfc-b04e-673aa07fdc34
+
+--WebAppBoundary
+Content-Disposition: form-data; name="password"
+
+{{PASSWORD}}
+--WebAppBoundary--

@@ -1,27 +1,53 @@
+### Create Admin
+POST {{BASE_URL}}/{{VERSION}}/admin
+x-api-key: {{API_KEY}}
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="profilepick"; filename="profilePick.jpg"
+
+< ../../local/tree-736885__480.jpg
+
+--WebAppBoundary
+Content-Disposition: form-data; name="name"
+
+Mahamadou
+
+--WebAppBoundary
+Content-Disposition: form-data; name="surname"
+
+Samake
+
+--WebAppBoundary
+Content-Disposition: form-data; name="email"
+
+{{EMAIL}}
+
+--WebAppBoundary
+Content-Disposition: form-data; name="phonenumber"
+
++337809643
+
+--WebAppBoundary
+Content-Disposition: form-data; name="role"
+
+ADMIN
+
+--WebAppBoundary
+Content-Disposition: form-data; name="password"
+
+{{PASSWORD}}
+--WebAppBoundary--
+
 ### Get All Admin
-GET {{BASE_URL}}/{{VERSION}}/admin?rowsPerPage=10&page=1
+GET {{BASE_URL}}/{{VERSION}}/admin?page=1&rowsPerPage=5
 x-api-key: {{API_KEY}}
 content-type: application/json
 
 ### Get By ID
-GET {{BASE_URL}}/{{VERSION}}/admin/{{ID}}
+GET {{BASE_URL}}/{{VERSION}}/admin/cd7176e5-02ed-4bfc-b04e-673aa07fdc34
 x-api-key: {{API_KEY}}
 content-type: application/json
-
-### Create Admin
-POST {{BASE_URL}}/{{VERSION}}/admin
-x-api-key: {{API_KEY}}
-content-type: application/json
-
-{
-  "name": "Mahamadou",
-  "surname": "samake",
-  "email": "{{EMAIL}}",
-  "phoneNumber": "+337809643",
-  "role": "ADMIN",
-  "profilePick": "test",
-  "password": "{{PASSWORD}}"
-}
 
 ### Login Admin
 POST {{BASE_URL}}/{{VERSION}}/admin/login
@@ -46,12 +72,24 @@ content-type: application/json
 ### Update Admin Info
 PUT {{BASE_URL}}/{{VERSION}}/admin/{{ID}}
 x-api-key: {{API_KEY}}
-content-type: application/json
+Content-Type: multipart/form-data; boundary=WebAppBoundary
 
-{
-  "name": "Bathie",
-  "surname": "Alexandre"
-}
+--WebAppBoundary
+Content-Disposition: form-data; name="profilepick"; filename="profilePick.jpg"
+
+< ../../local/picture.jpg
+
+--WebAppBoundary
+Content-Disposition: form-data; name="name"
+
+Bathie
+
+--WebAppBoundary
+Content-Disposition: form-data; name="surname"
+
+Alexandre
+
+--WebAppBoundary--
 
 ### Delete Admin
 DELETE {{BASE_URL}}/{{VERSION}}/admin/{{ID}}

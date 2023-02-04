@@ -1,0 +1,11 @@
+### Get all university
+GET {{BASE_URL}}/{{VERSION}}/university?limit=10&country=canada&lastEvaluatedKey=1c66a96d-0c43-4098-b3fa-4bbe83d5bcd8
+x-api-key: {{API_KEY}}
+content-type: application/json
+
+### Get university by id
+GET {{BASE_URL}}/{{VERSION}}/university/011a0d1c-e02b-45b8-a42a-ea308b9aa3da
+x-api-key: {{API_KEY}}
+content-type: application/json
+
+###

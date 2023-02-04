@@ -21,7 +21,7 @@ func Errors() lambda.Middelware {
 					Message: rqsErr.Error(),
 				}
 
-				return lambda.Response(ctx, 400, rsp)
+				return lambda.SendResponse(ctx, 400, rsp)
 			}
 			return rqsResp, nil
 		}
