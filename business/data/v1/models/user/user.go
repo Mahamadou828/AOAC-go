@@ -61,25 +61,23 @@ func FindByID(ctx context.Context, db *database.Database, id string) (User, erro
 }
 
 // FindOneByEmail return a user that match the given email
-func FindOneByEmail(ctx context.Context, db *database.Database, email, startKey string, limit int64) ([]User, string, error) {
-	var us []User
+func FindOneByEmail(ctx context.Context, db *database.Database, email string) (User, error) {
+	var us User
 
-	inp := database.FindByIndexInput[User]{
+	inp := database.FindOneByIndexInput[User]{
 		KeyName:   "email",
 		KeyValue:  email,
 		Index:     "emailIndex",
 		TableName: "user",
 		Dest:      &us,
-		Limit:     limit,
-		StartEK:   startKey,
 	}
 
-	lastEK, err := database.FindByIndex[User](ctx, db, inp)
+	err := database.FindOneByIndex[User](ctx, db, inp)
 	if err != nil {
-		return us, "", fmt.Errorf("can't find user by the given email: %v, %v", email, err)
+		return us, fmt.Errorf("can't find user by the given email: %v, %v", email, err)
 	}
 
-	return us, lastEK, nil
+	return us, nil
 }
 
 // Update the data of a user
@@ -143,7 +141,7 @@ func FindDocuments(ctx context.Context, db *database.Database, userID, startEK s
 	var res []Document
 
 	inp := database.FindByIndexInput[Document]{
-		KeyName:   "document",
+		KeyName:   "userID",
 		KeyValue:  userID,
 		Index:     "userIDIndex",
 		TableName: "document",

@@ -57,3 +57,9 @@ type RefreshTokenDTO struct {
 	ID           string `json:"id" validate:"required"`
 	RefreshToken string `json:"refreshToken" validate:"required"`
 }
+
+// ConfirmSignupDTO defines all data needed to confirm a new user or admin account
+type ConfirmSignupDTO struct {
+	Code   string `json:"code" validate:"required"`
+	UserID string `json:"userID" validate:"required"`
+}
