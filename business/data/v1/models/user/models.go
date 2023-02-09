@@ -70,3 +70,9 @@ type NewUserDTO struct {
 	NoteCertificate          string `json:"noteCertificate"`
 	BaccalaureateCertificate string `json:"baccalaureateCertificate"`
 }
+
+// LoginUserDTO represent all the data needed to login a user
+type LoginUserDTO struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}

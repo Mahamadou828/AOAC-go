@@ -216,7 +216,7 @@ Resources:
       - AmazonDynamoDBFullAccess
       - S3FullAccessPolicy:
           BucketName: testing-admin-profile-pick
-            
+
   RefreshAdminSessionFunction:
     Type: AWS::Serverless::Function
     Properties:

@@ -27,7 +27,7 @@ Mahamadou Samake
 --WebAppBoundary
 Content-Disposition: form-data; name="email"
 
-enrolleduser@gmail.com
+formationsamake@gmail.com
 
 --WebAppBoundary
 Content-Disposition: form-data; name="phonenumber"
@@ -89,3 +89,13 @@ Content-Disposition: form-data; name="password"
 
 {{PASSWORD}}
 --WebAppBoundary--
+
+### Login User
+POST {{BASE_URL}}/{{VERSION}}/user/login
+x-api-key: {{API_KEY}}
+content-type: application/json
+
+{
+  "email": "{{USER_EMAIL}}",
+  "password": "{{PASSWORD}}"
+}
