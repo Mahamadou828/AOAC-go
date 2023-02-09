@@ -203,6 +203,43 @@ Resources:
     Policies:
       # Give the Lambda service access to poll your DynamoDB Stream
       - AmazonDynamoDBFullAccess
+
+  LoginUserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../../app/lambda/v1/user-login/
+      Handler: user-admin
+      Environment:
+        Variables:
+          SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
+          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
+          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /v1/user/login
+            Method: Post
+    Policies:
+      # Give the Lambda service access to poll your DynamoDB Stream
+      - AmazonDynamoDBFullAccess
+
+  ConfirmSignUpFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../../app/lambda/v1/confirm-signup/
+      Handler: confirm-signup
+      Environment:
+        Variables:
+          SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
+          COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
+          COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /v1/auth/verify
+            Method: Post
             
   RefreshAdminSessionFunction:
     Type: AWS::Serverless::Function

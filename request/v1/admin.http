@@ -26,7 +26,7 @@ Content-Disposition: form-data; name="email"
 --WebAppBoundary
 Content-Disposition: form-data; name="phonenumber"
 
-+337809643
++33756866932
 
 --WebAppBoundary
 Content-Disposition: form-data; name="role"
@@ -45,7 +45,7 @@ x-api-key: {{API_KEY}}
 content-type: application/json
 
 ### Get By ID
-GET {{BASE_URL}}/{{VERSION}}/admin/cd7176e5-02ed-4bfc-b04e-673aa07fdc34
+GET {{BASE_URL}}/{{VERSION}}/admin/f5c27859-00ce-447d-af17-e571e5176d64
 x-api-key: {{API_KEY}}
 content-type: application/json
 
@@ -55,7 +55,7 @@ x-api-key: {{API_KEY}}
 content-type: application/json
 
 {
-  "email": "{{EMAIL}}",
+  "email": "{{USER_EMAIL}}",
   "password": "{{PASSWORD}}"
 }
 
@@ -67,6 +67,16 @@ content-type: application/json
 {
   "id": "{{ID}}",
   "refreshToken": "{{REFRESH_TOKEN}}"
+}
+
+### Confirm Signup
+POST {{BASE_URL}}/{{VERSION}}/auth/verify
+x-api-key: {{API_KEY}}
+content-type: application/json
+
+{
+  "userID": "fa2fd5bb-e3cf-4a33-9c89-61024e42d006",
+  "code": "399064"
 }
 
 ### Update Admin Info
