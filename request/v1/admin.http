@@ -21,7 +21,7 @@ Samake
 --WebAppBoundary
 Content-Disposition: form-data; name="email"
 
-{{EMAIL}}
+testopmadou@gmail.com
 
 --WebAppBoundary
 Content-Disposition: form-data; name="phonenumber"

@@ -88,6 +88,7 @@ Resources:
       Policies:
         # Give the Lambda service access to poll your DynamoDB Stream
         - AmazonDynamoDBFullAccess
+        - S3FullAccessPolicy
 
   CreateUserFunction:
     Type: AWS::Serverless::Function
@@ -168,6 +169,7 @@ Resources:
     Policies:
       # Give the Lambda service access to poll your DynamoDB Stream
       - AmazonDynamoDBFullAccess
+      - S3FullAccessPolicy
 
   DeleteAdminFunction:
     Type: AWS::Serverless::Function
@@ -188,6 +190,7 @@ Resources:
     Policies:
       # Give the Lambda service access to poll your DynamoDB Stream
       - AmazonDynamoDBFullAccess
+      - S3FullAccessPolicy
 
   LoginAdminFunction:
     Type: AWS::Serverless::Function
@@ -208,6 +211,7 @@ Resources:
     Policies:
       # Give the Lambda service access to poll your DynamoDB Stream
       - AmazonDynamoDBFullAccess
+      - S3FullAccessPolicy
             
   RefreshAdminSessionFunction:
     Type: AWS::Serverless::Function
