@@ -62,8 +62,6 @@ Resources:
           SECRET_ENV: !Join ['', ['{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}']]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -81,8 +79,6 @@ Resources:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -106,8 +102,6 @@ Resources:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -129,8 +123,6 @@ Resources:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -152,8 +144,6 @@ Resources:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -175,8 +165,6 @@ Resources:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -200,8 +188,6 @@ Resources:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -225,8 +211,6 @@ Resources:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -250,8 +234,6 @@ Resources:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -273,8 +255,6 @@ Resources:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -296,8 +276,6 @@ Resources:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -319,8 +297,6 @@ Resources:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -338,8 +314,6 @@ Resources:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
