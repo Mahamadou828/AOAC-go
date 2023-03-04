@@ -52,6 +52,19 @@ Globals:
         ENV: !Ref Env
 
 Resources:
+#  define policy to give access to aws cognito pool
+  AmazonCognitoFullAccess:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: MyLambdaFunctionPolicy
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - cognito-idp:*
+            Resource: "*"
+
   HelloWorldFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -90,7 +103,7 @@ Resources:
         - AmazonDynamoDBFullAccess
         - S3FullAccessPolicy:
             BucketName: testing-admin-profile-pick
-        - AmazonCognitoFullAccess
+        - !Ref AmazonCognitoFullAccess
 
   CreateUserFunction:
     Type: AWS::Serverless::Function
@@ -111,7 +124,7 @@ Resources:
       Policies:
         # Give the Lambda service access to poll your DynamoDB Stream
         - AmazonDynamoDBFullAccess
-        - AmazonCognitoFullAccess
+        - !Ref AmazonCognitoFullAccess
 
   GetAdminFunction:
     Type: AWS::Serverless::Function
@@ -131,7 +144,7 @@ Resources:
             Method: Get
     Policies:
       # Give the Lambda service access to poll your DynamoDB Stream
-      - AmazonCognitoFullAccess
+      - !Ref AmazonCognitoFullAccess
       - AmazonDynamoDBFullAccess
 
   GetAdminByIDFunction:
@@ -152,7 +165,7 @@ Resources:
             Method: Get
     Policies:
       # Give the Lambda service access to poll your DynamoDB Stream
-      - AmazonCognitoFullAccess
+      - !Ref AmazonCognitoFullAccess
       - AmazonDynamoDBFullAccess
 
   UpdateAdminFunction:
@@ -173,7 +186,7 @@ Resources:
             Method: Put
     Policies:
       # Give the Lambda service access to poll your DynamoDB Stream
-      - AmazonCognitoFullAccess
+      - !Ref AmazonCognitoFullAccess
       - AmazonDynamoDBFullAccess
       - S3FullAccessPolicy:
           BucketName: testing-admin-profile-pick
@@ -196,7 +209,7 @@ Resources:
             Method: Delete
     Policies:
       # Give the Lambda service access to poll your DynamoDB Stream
-      - AmazonCognitoFullAccess
+      - !Ref AmazonCognitoFullAccess
       - AmazonDynamoDBFullAccess
       - S3FullAccessPolicy:
           BucketName: testing-admin-profile-pick
@@ -219,7 +232,7 @@ Resources:
             Method: Post
     Policies:
       # Give the Lambda service access to poll your DynamoDB Stream
-      - AmazonCognitoFullAccess
+      - !Ref AmazonCognitoFullAccess
       - AmazonDynamoDBFullAccess
       - S3FullAccessPolicy:
           BucketName: testing-admin-profile-pick
@@ -242,7 +255,7 @@ Resources:
             Method: Post
     Policies:
       # Give the Lambda service access to poll your DynamoDB Stream
-      - AmazonCognitoFullAccess
+      - !Ref AmazonCognitoFullAccess
       - AmazonDynamoDBFullAccess
 
   ConfirmSignUpFunction:
@@ -263,7 +276,7 @@ Resources:
             Method: Post
       Policies:
         # Give the Lambda service access to poll your DynamoDB Stream
-        - AmazonCognitoFullAccess
+        - !Ref AmazonCognitoFullAccess
         - AmazonDynamoDBFullAccess
             
   RefreshAdminSessionFunction:
@@ -284,7 +297,7 @@ Resources:
             Method: Post
       Policies:
         # Give the Lambda service access to poll your DynamoDB Stream
-        - AmazonCognitoFullAccess
+        - !Ref AmazonCognitoFullAccess
         - AmazonDynamoDBFullAccess
 
   GetUniversityFunction:
