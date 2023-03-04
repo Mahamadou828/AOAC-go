@@ -16,6 +16,17 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
+type Session struct {
+	User           model.User          `json:"user"`
+	ProfilePickUrl string              `json:"profilePickUrl"`
+	RefreshToken   string              `json:"refreshToken"`
+	ExpiresIn      int64               `json:"expiresIn"`
+	Token          string              `json:"token"`
+	Documents      []model.Document    `json:"documents"`
+	Applications   []model.Application `json:"applications"`
+	DocumentLastEK string              `json:"documentLastEK"`
+}
+
 func Create(ctx context.Context, cfg *lambda.Config, r events.APIGatewayProxyRequest, now time.Time) (model.User, error) {
 	id := validate.GenerateID()
 
@@ -31,8 +42,8 @@ func Create(ctx context.Context, cfg *lambda.Config, r events.APIGatewayProxyReq
 
 	//Get all the universities he applied and format the applications
 	//@todo to-refacto to do a single request to get all the universities
-	for _, id := range nu.SelectedUniversities {
-		u, err := uniModel.FindByID(ctx, cfg.Db, id)
+	for _, uID := range nu.SelectedUniversities {
+		u, err := uniModel.FindByID(ctx, cfg.Db, uID)
 		if err != nil {
 			return model.User{}, fmt.Errorf("can't find selected uniform: %v", err)
 		}
@@ -65,18 +76,19 @@ func Create(ctx context.Context, cfg *lambda.Config, r events.APIGatewayProxyReq
 		CreatedAt: now,
 		DeleteAt:  time.Time{},
 		UpdatedAt: now,
+		S3URL:     validate.GenerateID(),
 	}
 	baccCertif := model.Document{
 		ID:        validate.GenerateID(),
-		Name:      "note certificate of" + nu.Name,
+		Name:      "baccalaureate certificate of" + nu.Name,
 		UserID:    id,
 		CreatedAt: now,
 		DeleteAt:  time.Time{},
 		UpdatedAt: now,
+		S3URL:     validate.GenerateID(),
 	}
-	var err error
 
-	if noteCertif.S3URL, err = cfg.AWSClient.S3.UploadToBucket(
+	if _, err := cfg.AWSClient.S3.UploadToBucket(
 		strings.NewReader(nu.NoteCertificate),
 		cfg.AWSClient.S3.S3UserDocumentBucket,
 		validate.GenerateID(),
@@ -84,7 +96,7 @@ func Create(ctx context.Context, cfg *lambda.Config, r events.APIGatewayProxyReq
 		return model.User{}, fmt.Errorf("can't upload the note certificate: %v", err)
 	}
 
-	if baccCertif.S3URL, err = cfg.AWSClient.S3.UploadToBucket(
+	if _, err := cfg.AWSClient.S3.UploadToBucket(
 		strings.NewReader(nu.BaccalaureateCertificate),
 		cfg.AWSClient.S3.S3UserDocumentBucket,
 		validate.GenerateID(),
@@ -137,4 +149,50 @@ func Create(ctx context.Context, cfg *lambda.Config, r events.APIGatewayProxyReq
 	}
 
 	return user, nil
+}
+
+func Login(ctx context.Context, cfg *lambda.Config, data model.LoginUserDTO) (Session, error) {
+	u, err := model.FindOneByEmail(ctx, cfg.Db, data.Email)
+	if err != nil {
+		return Session{}, fmt.Errorf("can't find user: %v", err)
+	}
+
+	sess, err := cfg.AWSClient.Cognito.AuthenticateUser(u.CognitoID, data.Password)
+	if err != nil {
+		return Session{}, fmt.Errorf("can't authenticate user: %v", err)
+	}
+
+	profilePickUrl, err := cfg.AWSClient.S3.GeneratePresignedUrl(cfg.AWSClient.S3.S3UserProfilePictureBucket, u.Id)
+	if err != nil {
+		return Session{}, fmt.Errorf("can't generate profile picture url: %v", err)
+	}
+
+	docs, lastDocEk, err := model.FindDocuments(ctx, cfg.Db, u.Id, "", 5)
+	if err != nil {
+		return Session{}, fmt.Errorf("can't find documents user document: %v", err)
+	}
+
+	for i := range docs {
+		docUrl, err := cfg.AWSClient.S3.GeneratePresignedUrl(cfg.AWSClient.S3.S3UserDocumentBucket, docs[i].S3URL)
+		if err != nil {
+			return Session{}, fmt.Errorf("can't generate presigned url: %v", err)
+		}
+		docs[i].S3URL = docUrl
+	}
+
+	applications, err := model.FindApplications(ctx, cfg.Db, u.Id)
+	if err != nil {
+		return Session{}, fmt.Errorf("can't find applications for user: %v", err)
+	}
+
+	return Session{
+		User:           u,
+		ProfilePickUrl: profilePickUrl,
+		RefreshToken:   sess.RefreshToken,
+		ExpiresIn:      sess.ExpireIn,
+		Token:          sess.Token,
+		Documents:      docs,
+		Applications:   applications,
+		DocumentLastEK: lastDocEk,
+	}, nil
 }

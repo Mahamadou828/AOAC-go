@@ -26,6 +26,7 @@ type Client struct {
 }
 
 func New(cfg Config) (*Client, error) {
+
 	//Initiate a new aws session
 	sess, err := session.NewSessionWithOptions(session.Options{
 		Config: aws.Config{

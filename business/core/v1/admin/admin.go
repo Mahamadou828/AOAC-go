@@ -225,3 +225,11 @@ func RefreshToken(ctx context.Context, cfg *lambda.Config, data admin.RefreshTok
 		ProfilePickUrl: url,
 	}, nil
 }
+
+func ConfirmSignUp(data admin.ConfirmSignupDTO, cfg *lambda.Config) error {
+	if err := cfg.AWSClient.Cognito.ConfirmSignUp(data.Code, data.UserID); err != nil {
+		return fmt.Errorf("can't confirm sign up: %v", err)
+	}
+
+	return nil
+}

@@ -86,7 +86,7 @@ func (c *Cognito) ConfirmSignUp(code, id string) error {
 	//Update the user isActive attribute to true
 	attr := []*cognitoidentityprovider.AttributeType{
 		{
-			Name:  sdkaws.String("isActive"),
+			Name:  sdkaws.String("custom:isActive"),
 			Value: sdkaws.String("true"),
 		},
 	}
