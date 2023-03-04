@@ -62,8 +62,6 @@ Resources:
           SECRET_ENV: !Join ['', ['{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}']]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -81,8 +79,6 @@ Resources:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -94,6 +90,7 @@ Resources:
         - AmazonDynamoDBFullAccess
         - S3FullAccessPolicy:
             BucketName: testing-admin-profile-pick
+        - AmazonCognitoFullAccess
 
   CreateUserFunction:
     Type: AWS::Serverless::Function
@@ -105,8 +102,6 @@ Resources:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -116,6 +111,7 @@ Resources:
       Policies:
         # Give the Lambda service access to poll your DynamoDB Stream
         - AmazonDynamoDBFullAccess
+        - AmazonCognitoFullAccess
 
   GetAdminFunction:
     Type: AWS::Serverless::Function
@@ -127,8 +123,6 @@ Resources:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -137,6 +131,7 @@ Resources:
             Method: Get
     Policies:
       # Give the Lambda service access to poll your DynamoDB Stream
+      - AmazonCognitoFullAccess
       - AmazonDynamoDBFullAccess
 
   GetAdminByIDFunction:
@@ -149,8 +144,6 @@ Resources:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -159,6 +152,7 @@ Resources:
             Method: Get
     Policies:
       # Give the Lambda service access to poll your DynamoDB Stream
+      - AmazonCognitoFullAccess
       - AmazonDynamoDBFullAccess
 
   UpdateAdminFunction:
@@ -171,8 +165,6 @@ Resources:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -181,6 +173,7 @@ Resources:
             Method: Put
     Policies:
       # Give the Lambda service access to poll your DynamoDB Stream
+      - AmazonCognitoFullAccess
       - AmazonDynamoDBFullAccess
       - S3FullAccessPolicy:
           BucketName: testing-admin-profile-pick
@@ -195,8 +188,6 @@ Resources:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -205,6 +196,7 @@ Resources:
             Method: Delete
     Policies:
       # Give the Lambda service access to poll your DynamoDB Stream
+      - AmazonCognitoFullAccess
       - AmazonDynamoDBFullAccess
       - S3FullAccessPolicy:
           BucketName: testing-admin-profile-pick
@@ -219,8 +211,6 @@ Resources:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -229,6 +219,7 @@ Resources:
             Method: Post
     Policies:
       # Give the Lambda service access to poll your DynamoDB Stream
+      - AmazonCognitoFullAccess
       - AmazonDynamoDBFullAccess
       - S3FullAccessPolicy:
           BucketName: testing-admin-profile-pick
@@ -243,8 +234,6 @@ Resources:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -253,6 +242,7 @@ Resources:
             Method: Post
     Policies:
       # Give the Lambda service access to poll your DynamoDB Stream
+      - AmazonCognitoFullAccess
       - AmazonDynamoDBFullAccess
 
   ConfirmSignUpFunction:
@@ -265,14 +255,16 @@ Resources:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
           Properties:
             Path: /v1/auth/verify
             Method: Post
+      Policies:
+        # Give the Lambda service access to poll your DynamoDB Stream
+        - AmazonCognitoFullAccess
+        - AmazonDynamoDBFullAccess
             
   RefreshAdminSessionFunction:
     Type: AWS::Serverless::Function
@@ -284,14 +276,16 @@ Resources:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
           Properties:
             Path: /v1/admin/login/refresh
             Method: Post
+      Policies:
+        # Give the Lambda service access to poll your DynamoDB Stream
+        - AmazonCognitoFullAccess
+        - AmazonDynamoDBFullAccess
 
   GetUniversityFunction:
     Type: AWS::Serverless::Function
@@ -303,8 +297,6 @@ Resources:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
@@ -322,8 +314,6 @@ Resources:
           SECRET_ENV: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'ENV', '}}' ] ]
           COGNITO_USER_POOL_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_USER_POOL_ID', '}}' ] ]
           COGNITO_CLIENT_ID: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'COGNITO_CLIENT_ID', '}}' ] ]
-          AWS_SECRET_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_SECRET_ACCESS_KEY', '}}' ] ]
-          AWS_ACCESS_KEY: !Join [ '', [ '{{resolve:secretsmanager:', !Ref Service, '/', !Ref Env, ':SecretString:', 'AWS_ACCESS_KEY', '}}' ] ]
       Events:
         CatchAll:
           Type: Api
