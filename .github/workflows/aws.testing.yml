@@ -23,4 +23,4 @@ jobs:
       # Run Unit tests- Specify unit tests here
 
       # sam deploy
-      - run: sam deploy --config-env testing
+      - run: sam deploy --capabilities CAPABILITY_NAMED_IAM --config-env testing
